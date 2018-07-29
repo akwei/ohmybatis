@@ -323,11 +323,11 @@ class EntityInfo {
                 sb.append(fieldInfo.getColumn());
                 sb.append(" like ");
                 if (like.left()) {
-                    sb.append("%");
+                    sb.append("\"%\"");
                 }
                 sb.append("#{").append(parameter.getName()).append("}");
                 if (like.right()) {
-                    sb.append("%");
+                    sb.append("\"%\"");
                 }
                 if (i < lastIdx) {
                     sb.append(" and ");

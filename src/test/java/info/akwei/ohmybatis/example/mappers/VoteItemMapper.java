@@ -17,14 +17,21 @@ public interface VoteItemMapper extends BaseMapper<VoteItem> {
 
     @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.SELECT)
     @AfterWhere("order by create_time desc limit #{offset},#{size}")
-    VoteItem getListByCdn(Class clazz,
-                          int voteItemId,
-                          @NotEq("voteItemId") int noVoteItemId,
-                          String title,
-                          @MinValue("createTime") long beginTime,
-                          @MaxValue("createTime") long endTime,
-                          @NotColumn int offset,
-                          @NotColumn int size);
+    List<VoteItem> getListByCdn(
+            int voteItemId,
+            @NotEq("voteItemId") int noVoteItemId,
+            String title,
+            @MinValue("createTime") long beginTime,
+            @MaxValue("createTime") long endTime,
+            @NotColumn int offset,
+            @NotColumn int size);
+
+    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.SELECT)
+    @AfterWhere("order by create_time desc limit #{offset},#{size}")
+    List<VoteItem> getListByCdn2(
+            @Like String title,
+            @NotColumn int offset,
+            @NotColumn int size);
 
     @Insert("insert into tb_vote_item(title,create_time) values(#{title},#{createTime})")
     @Options(useGeneratedKeys = true, keyProperty = "voteItemId")

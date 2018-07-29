@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext.xml"})
@@ -78,9 +79,15 @@ public class MapperTest {
 
     @Test
     public void select() {
-        this.voteItemMapper.getListByCdn(VoteItem.class, 1, 2, "akwei",
+        this.voteItemMapper.getListByCdn(1, 2, "akwei",
                 System.currentTimeMillis() - 1000000,
                 System.currentTimeMillis(), 0, 10);
+    }
+
+    @Test
+    public void select2() throws Exception {
+        List<VoteItem> list = this.voteItemMapper.getListByCdn2("akwei", 0, 2);
+        Assert.assertNotNull(list);
     }
 
     @Test
