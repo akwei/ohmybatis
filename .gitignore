@@ -1,0 +1,10 @@
+/.settings
+/build
+/.classpath
+/target
+/.idea
+*.iml
+.project
+/bin/
+/thrift/gen-java
+/solc/solccc

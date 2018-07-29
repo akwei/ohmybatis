@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+    <context:annotation-config/>
+    <context:component-scan base-package="info.akwei.ohmybatis.example"/>
+    <mybatis:scan base-package="info.akwei.ohmybatis.example.mappers"/>
+    <tx:annotation-driven proxy-target-class="true"/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="user" value="root"/>
+        <property name="password" value="asdasd"/>
+        <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/db_vote?useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="idleConnectionTestPeriod" value="60"/>
+        <property name="preferredTestQuery" value="select 1"/>
+        <property name="minPoolSize" value="2"/>
+        <property name="initialPoolSize" value="2"/>
+        <property name="maxPoolSize" value="5"/>
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="acquireRetryAttempts" value="3"/>
+        <property name="checkoutTimeout" value="60000"/>
+        <property name="maxIdleTime" value="300"/>
+        <property name="contextClassLoaderSource" value="library"/>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="configuration" class="org.apache.ibatis.session.Configuration">
+        <property name="mapUnderscoreToCamelCase" value="true"/>
+        <property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
+    </bean>
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configuration" ref="configuration"/>
+        <property name="mapperLocations" value="classpath*:info/akwei/ohmybatis/example/mappers/*Mapper.xml"/>
+    </bean>
+
+</beans>

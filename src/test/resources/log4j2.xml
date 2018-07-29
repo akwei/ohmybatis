@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="sys.module">ohmybatis</Property>
+        <Property name="sys.env">dev</Property>
+        <Property name="sys.logPath">/data/logs</Property>
+    </Properties>
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%-5p] [${sys.env}] [${sys.module}] [%X{ip}] [%X{reqid}] %d{yyyy-MM-dd HH:mm:ss.SSS} (%F:%L) %m%n"/>
+        </console>
+        <RollingFile name="sysall"
+                     fileName="${sys:user.home}/temp/${sys.logPath}/${sys.module}/system_all.log"
+                     filePattern="${sys:user.home}/temp/${sys.logPath}/${sys.module}/$${date:yyyy-MM}/system_all-%d{yyyy-MM-dd}-%i.log"
+                     Append="true">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8"
+                           pattern="[%-5p] [${sys.env}] [${sys.module}] [%X{ip}] [%X{reqid}] %d{yyyy-MM-dd HH:mm:ss.SSS} (%F:%L) %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="syserror"
+                     fileName="${sys:user.home}/temp/${sys.logPath}/${sys.module}/error.log"
+                     filePattern="${sys:user.home}/temp/${sys.logPath}/${sys.module}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log"
+                     Append="true">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8"
+                           pattern="[%-5p] [${sys.env}] [${sys.module}] [%X{ip}] [%X{reqid}] %d{yyyy-MM-dd HH:mm:ss.SSS} (%F:%L) %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </appenders>
+    <loggers>
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="sysall"/>
+            <appender-ref ref="syserror"/>
+        </root>
+    </loggers>
+</configuration>
