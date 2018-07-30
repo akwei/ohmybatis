@@ -10,12 +10,12 @@ import java.util.List;
 
 public interface VoteItemMapper extends BaseMapper<VoteItem> {
 
-    @Select("select * from tb_vote_item where vote_item_id=#{voteItemId}")
-    VoteItem getByVoteItemId(int voteItemId);
+    //    @Select("select * from tb_vote_item where vote_item_id=#{voteItemId}")
+    VoteItem getByVoteItemId(@Param("voteItemId") int voteItemId);
 
     VoteItem getByVoteItemId2(int voteItemId);
 
-    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.SELECT)
+    //    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.SELECT)
     @AfterWhere("order by create_time desc limit #{offset},#{size}")
     List<VoteItem> getListByCdn(
             int voteItemId,
@@ -26,7 +26,7 @@ public interface VoteItemMapper extends BaseMapper<VoteItem> {
             @NotColumn int offset,
             @NotColumn int size);
 
-    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.SELECT)
+    //    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.SELECT)
     @AfterWhere("order by create_time desc limit #{offset},#{size}")
     List<VoteItem> getListByCdn2(
             @Like String title,
@@ -37,20 +37,20 @@ public interface VoteItemMapper extends BaseMapper<VoteItem> {
     @Options(useGeneratedKeys = true, keyProperty = "voteItemId")
     void insert(VoteItem voteItem);
 
-    @InsertProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.INSERT)
+    //    @InsertProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.INSERT)
     @Options(useGeneratedKeys = true, keyProperty = "voteItemId")
     void insert2(VoteItem voteItem);
 
-    @UpdateProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.UPDATE_OBJ)
-    int update(VoteItem voteItem, VoteItem old);
+    //    @UpdateProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.UPDATE_OBJ)
+    int updateObj(VoteItem voteItem, VoteItem old);
 
-    @DeleteProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.DELETE)
+    //    @DeleteProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.DELETE)
     int delete(@Param("voteItemId") int voteItemId);
 
-    @DeleteProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.DELETE)
+    //    @DeleteProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.DELETE)
     int delete2(Class clazz, int voteItemId, String title);
 
-    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.COUNT)
+    //    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.COUNT)
     int count(Class clazz, int voteItemId, String title);
 
     List<VoteItem> getMapInIds(List<Integer> ids);

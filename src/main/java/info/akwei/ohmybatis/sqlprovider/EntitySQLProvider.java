@@ -22,6 +22,8 @@ public class EntitySQLProvider {
 
     public static final String UPDATE_OBJ = "buildUpdateObjSQL";
 
+    public static final String UPDATE = "buildUpdateSQL";
+
     public static final String DELETE = "buildDeleteSQL";
 
     public static final String SELECT = "buildSelectSQL";
@@ -59,7 +61,10 @@ public class EntitySQLProvider {
     @SuppressWarnings("unused") //某些代码自动调用
     public static String buildUpdateObjSQL(ProviderContext providerContext, Map<String, Object> argMap) {
         Object obj = argMap.get("param1");
-        Object old = argMap.get("param2");
+        Object old = null;
+        if (argMap.containsKey("param2")) {
+            old = argMap.get("param2");
+        }
         Objects.requireNonNull(obj, "update object must be not null");
         Class<?> entityClazz = obj.getClass();
         EntityInfo entityInfo = getEntityInfo(entityClazz);
@@ -210,4 +215,48 @@ public class EntitySQLProvider {
         }
         return (Class) types[0];
     }
+
+//    public static SqlCommandType getSqlCommandType(Method method) {
+//        String methodName = method.getName();
+//        if (methodName.startsWith("insert")) {
+//            return SqlCommandType.INSERT;
+//        }
+//        if (methodName.startsWith("updateObj")) {
+//            return SqlCommandType.UPDATE;
+//        }
+//        if (methodName.startsWith("update")) {
+//            return SqlCommandType.UPDATE;
+//        }
+//        if (methodName.startsWith("delete")) {
+//            return SqlCommandType.DELETE;
+//        }
+//        if (methodName.startsWith("select") || methodName.startsWith("find") || methodName.startsWith("query") || methodName.startsWith("count")) {
+//            return SqlCommandType.SELECT;
+//        }
+//        return SqlCommandType.UNKNOWN;
+//    }
+//
+//
+//    public static String buildSQL(ProviderContext providerContext, Map<String, Object> argMap) {
+//        String methodName = providerContext.getMapperMethod().getName();
+//        if (methodName.startsWith("insert")) {
+//            return EntitySQLProvider.buildInsertSQL(providerContext);
+//        }
+//        if (methodName.startsWith("updateObj")) {
+//            return EntitySQLProvider.buildUpdateObjSQL(providerContext, argMap);
+//        }
+//        if (methodName.startsWith("update")) {
+//            return EntitySQLProvider.buildUpdateSQL(providerContext, argMap);
+//        }
+//        if (methodName.startsWith("delete")) {
+//            return EntitySQLProvider.buildDeleteSQL(providerContext, argMap);
+//        }
+//        if (methodName.startsWith("select") || methodName.startsWith("find") || methodName.startsWith("query")) {
+//            return EntitySQLProvider.buildSelectSQL(providerContext, argMap);
+//        }
+//        if (methodName.startsWith("count")) {
+//            return EntitySQLProvider.buildCountSQL(providerContext, argMap);
+//        }
+//        throw new RuntimeException("methodName:" + methodName + " can not matched : insert, updateObj, update, delete, select, find, query, count");
+//    }
 }

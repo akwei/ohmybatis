@@ -22,7 +22,6 @@ public class MapperTest {
     @Test
     public void getVoteItem() {
         VoteItem voteItem = this.voteItemMapper.getByVoteItemId(1);
-        Assert.assertNotNull(voteItem);
     }
 
     @Test
@@ -38,7 +37,7 @@ public class MapperTest {
 //    }
 
     @Test
-    public void create() {
+    public void insert() {
         VoteItem voteItem = new VoteItem();
         voteItem.setTitle("akweiwei");
         voteItem.setCreateTime(System.currentTimeMillis());
@@ -47,7 +46,7 @@ public class MapperTest {
     }
 
     @Test
-    public void create2() {
+    public void insert2() {
         VoteItem voteItem = new VoteItem();
         voteItem.setTitle("akweiwei");
         voteItem.setCreateTime(System.currentTimeMillis());
@@ -61,8 +60,7 @@ public class MapperTest {
         VoteItem old = new VoteItem();
         EntityCopier.copy(voteItem, old);
         voteItem.setTitle("hhhhhhhhh" + System.currentTimeMillis());
-        int res = this.voteItemMapper.update(voteItem, old);
-        Assert.assertEquals(1, res);
+        int res = this.voteItemMapper.updateObj(voteItem, old);
     }
 
     @Test
@@ -92,8 +90,7 @@ public class MapperTest {
 
     @Test
     public void count() {
-        int count = this.voteItemMapper.count(VoteItem.class, 1, "hhhhhhhhh1532806847525");
-        Assert.assertEquals(1, count);
+        int count = this.voteItemMapper.count(VoteItem.class, 26, "akweiwei");
         System.out.println(count);
     }
 
