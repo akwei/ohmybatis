@@ -8,15 +8,15 @@ import java.lang.reflect.Method;
 /**
  * @author Eduardo Macarron
  */
-public class SimpleMethodResolver extends MethodResolver {
+public class OhMethodResolver extends MethodResolver {
 
-    private SimpleMapperAnnotationBuilder annotationBuilder;
+    private OhMapperAnnotationBuilder annotationBuilder;
 
     private Method method;
 
-    public SimpleMethodResolver(MapperAnnotationBuilder annotationBuilder, Method method) {
+    public OhMethodResolver(MapperAnnotationBuilder annotationBuilder, Method method) {
         super(annotationBuilder, method);
-        this.annotationBuilder = (SimpleMapperAnnotationBuilder) annotationBuilder;
+        this.annotationBuilder = (OhMapperAnnotationBuilder) annotationBuilder;
         this.method = method;
     }
 

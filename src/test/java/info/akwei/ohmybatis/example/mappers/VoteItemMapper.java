@@ -48,10 +48,10 @@ public interface VoteItemMapper extends BaseMapper<VoteItem> {
     int delete(@Param("voteItemId") int voteItemId);
 
     //    @DeleteProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.DELETE)
-    int delete2(Class clazz, int voteItemId, String title);
+    int delete2(int voteItemId, String title);
 
     //    @SelectProvider(type = EntitySQLProvider.class, method = EntitySQLProvider.COUNT)
-    int count(Class clazz, int voteItemId, String title);
+    int count(int voteItemId, String title);
 
     List<VoteItem> getMapInIds(List<Integer> ids);
 }

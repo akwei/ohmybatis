@@ -5,7 +5,7 @@ import org.apache.ibatis.session.Configuration;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.context.ApplicationEvent;
 
-public class SimpleSqlSessionFactoryBean extends SqlSessionFactoryBean {
+public class OhSqlSessionFactoryBean extends SqlSessionFactoryBean {
 
 
     private Configuration configuration;
@@ -21,7 +21,7 @@ public class SimpleSqlSessionFactoryBean extends SqlSessionFactoryBean {
         super.onApplicationEvent(event);
         MapperRegistry mapperRegistry = this.configuration.getMapperRegistry();
         for (Class<?> aClass : mapperRegistry.getMappers()) {
-            SimpleMapperAnnotationBuilder builder = new SimpleMapperAnnotationBuilder(this.configuration, aClass);
+            OhMapperAnnotationBuilder builder = new OhMapperAnnotationBuilder(this.configuration, aClass);
             builder.parse();
         }
     }

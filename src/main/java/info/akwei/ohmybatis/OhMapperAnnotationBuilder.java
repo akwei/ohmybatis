@@ -35,9 +35,9 @@ import java.io.InputStream;
 import java.lang.reflect.*;
 import java.util.*;
 
-public class SimpleMapperAnnotationBuilder extends MapperAnnotationBuilder {
+public class OhMapperAnnotationBuilder extends MapperAnnotationBuilder {
 
-    private static Logger logger = LoggerFactory.getLogger(SimpleMapperAnnotationBuilder.class);
+    private static Logger logger = LoggerFactory.getLogger(OhMapperAnnotationBuilder.class);
 
     private final Configuration configuration;
 
@@ -45,7 +45,7 @@ public class SimpleMapperAnnotationBuilder extends MapperAnnotationBuilder {
 
     private final Class<?> type;
 
-    SimpleMapperAnnotationBuilder(Configuration configuration, Class<?> type) {
+    OhMapperAnnotationBuilder(Configuration configuration, Class<?> type) {
         super(configuration, type);
         String resource = type.getName().replace('.', '/') + ".java (best guess)";
         this.assistant = new MapperBuilderAssistant(configuration, resource);
@@ -68,7 +68,7 @@ public class SimpleMapperAnnotationBuilder extends MapperAnnotationBuilder {
             if (this.configuration.hasStatement(statementId, false)) {
                 continue;
             }
-            configuration.addIncompleteMethod(new SimpleMethodResolver(this, method));
+            configuration.addIncompleteMethod(new OhMethodResolver(this, method));
         }
         parsePendingMethods();
     }
@@ -379,13 +379,12 @@ public class SimpleMapperAnnotationBuilder extends MapperAnnotationBuilder {
                 }
             }
         }
-
         return returnType;
     }
 
     private SqlSource getSqlSourceFromAnnotations(Method method) {
         String methodName = method.getName();
-        SqlProviderAnnotationProxy sproxy = new SqlProviderAnnotationProxy();
+        SqlProviderPinocchio sproxy = new SqlProviderPinocchio();
         if (methodName.startsWith("insert")) {
             sproxy.setClazz(InsertProvider.class);
             sproxy.setOriType(EntitySQLProvider.class);
@@ -413,9 +412,6 @@ public class SimpleMapperAnnotationBuilder extends MapperAnnotationBuilder {
         } else {
             throw new RuntimeException("methodName:" + methodName + " can not matched : insert, updateObj, update, delete, get, select, find, query, count");
         }
-//        for (Field field : SqlProviderAnnotationProxy.class.getDeclaredFields()) {
-//            field.setAccessible(true);
-//        }
         return new ProviderSqlSource(assistant.getConfiguration(), sproxy, type, method);
     }
 
@@ -555,20 +551,13 @@ public class SimpleMapperAnnotationBuilder extends MapperAnnotationBuilder {
         boolean executeBefore = selectKeyAnnotation.before();
 
         // defaults
-        boolean useCache = false;
         KeyGenerator keyGenerator = NoKeyGenerator.INSTANCE;
-        Integer fetchSize = null;
-        Integer timeout = null;
-        boolean flushCache = false;
-        String parameterMap = null;
-        String resultMap = null;
-        ResultSetType resultSetTypeEnum = null;
 
         SqlSource sqlSource = buildSqlSourceFromStrings(selectKeyAnnotation.statement(), parameterTypeClass, languageDriver);
         SqlCommandType sqlCommandType = SqlCommandType.SELECT;
 
-        assistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum,
-                flushCache, useCache, false,
+        assistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, null, null, null, parameterTypeClass, null, resultTypeClass, null,
+                false, false, false,
                 keyGenerator, keyProperty, keyColumn, null, languageDriver, null);
 
         id = assistant.applyCurrentNamespace(id, false);

@@ -36,7 +36,7 @@
     </bean>
 
     <!--  org.mybatis.spring.SqlSessionFactoryBean-->
-    <bean id="sqlSessionFactoryBean" class="info.akwei.ohmybatis.SimpleSqlSessionFactoryBean">
+    <bean id="sqlSessionFactoryBean" class="info.akwei.ohmybatis.OhSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="configuration" ref="configuration"/>
         <property name="mapperLocations" value="classpath*:info/akwei/ohmybatis/example/mappers/*Mapper.xml"/>

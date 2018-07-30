@@ -2,7 +2,7 @@ package info.akwei.ohmybatis;
 
 import java.lang.annotation.Annotation;
 
-public class SqlProviderAnnotationProxy {
+public class SqlProviderPinocchio {
 
     private Class<? extends Annotation> clazz;
 
