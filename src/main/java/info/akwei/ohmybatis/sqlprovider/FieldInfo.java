@@ -10,14 +10,10 @@ class FieldInfo {
 
     private String column;
 
-    FieldInfo(Field field, Boolean needCamelName) {
+    FieldInfo(Field field, boolean mapUnderscoreToCamelCase) {
         this.field = field;
-        if (needCamelName != null) {
-            if (needCamelName) {
-                this.column = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.field.getName());
-            } else {
-                this.column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.field.getName());
-            }
+        if (mapUnderscoreToCamelCase) {
+            this.column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.field.getName());
         } else {
             this.column = this.field.getName();
         }

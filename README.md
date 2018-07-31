@@ -1,4 +1,25 @@
-#how to use
+##Notice
+* column name、table name can be underscore and java bean property can be camelCase. **For example (column: user_name, java property: userName)**
+* colum name、table name can equals with java bean property. **For example (column:user_name, java property: user_name or column:userName, java property userName)**
+* complie with java8 and use argument -parameters, if use maven, add following xml data to pom.xml
+
+```` xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <version>3.3</version>
+    <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+        <compilerArgs>
+            <arg>-parameters</arg>
+        </compilerArgs>
+    </configuration>
+</plugin>
+````
+
+
+##How to use
 * import mybatis,version >= 3.4.5
 * use mybatis-spring, version >= 1.3.2
 * write spring application.xml
@@ -50,7 +71,7 @@ public class User {
 
 ````  
 
-* write a bean's mapper
+* write a bean's mapper extends MapperIface<T>
 
 ```` java
 

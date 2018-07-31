@@ -13,7 +13,7 @@ class EntityInfo {
 
     private Class clazz;
 
-    private Boolean needCamelName;
+    private boolean mapUnderscoreToCamelCase;
 
     private List<FieldInfo> idFieldInfos;
 
@@ -25,12 +25,12 @@ class EntityInfo {
      */
     private List<FieldInfo> fieldInfos;
 
-    EntityInfo(Class clazz, Boolean needCamelName) {
+    EntityInfo(Class clazz, boolean mapUnderscoreToCamelCase) {
         this.fieldInfos = new ArrayList<>();
         this.idFieldInfos = new ArrayList<>();
         this.fieldInfoMap = new HashMap<>();
         this.clazz = clazz;
-        this.needCamelName = needCamelName;
+        this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
     }
 
     void init() {
@@ -51,7 +51,7 @@ class EntityInfo {
                 if (notColumn != null) {
                     continue;
                 }
-                FieldInfo fieldInfo = new FieldInfo(f, this.needCamelName);
+                FieldInfo fieldInfo = new FieldInfo(f, this.mapUnderscoreToCamelCase);
                 Id id = f.getAnnotation(Id.class);
                 if (id != null) {
                     idFieldInfos.add(fieldInfo);
