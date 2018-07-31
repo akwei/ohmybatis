@@ -1,7 +1,7 @@
 package info.akwei.ohmybatis.sqlprovider;
 
-import info.akwei.ohmybatis.annotations.AfterWhere;
 import info.akwei.ohmybatis.MapperIface;
+import info.akwei.ohmybatis.annotations.AfterWhere;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.annotation.ProviderContext;
@@ -215,48 +215,4 @@ public class SimpleSQLProvider {
         }
         return (Class) types[0];
     }
-
-//    public static SqlCommandType getSqlCommandType(Method method) {
-//        String methodName = method.getName();
-//        if (methodName.startsWith("insert")) {
-//            return SqlCommandType.INSERT;
-//        }
-//        if (methodName.startsWith("updateObj")) {
-//            return SqlCommandType.UPDATE;
-//        }
-//        if (methodName.startsWith("update")) {
-//            return SqlCommandType.UPDATE;
-//        }
-//        if (methodName.startsWith("delete")) {
-//            return SqlCommandType.DELETE;
-//        }
-//        if (methodName.startsWith("select") || methodName.startsWith("find") || methodName.startsWith("query") || methodName.startsWith("count")) {
-//            return SqlCommandType.SELECT;
-//        }
-//        return SqlCommandType.UNKNOWN;
-//    }
-//
-//
-//    public static String buildSQL(ProviderContext providerContext, Map<String, Object> argMap) {
-//        String methodName = providerContext.getMapperMethod().getName();
-//        if (methodName.startsWith("insert")) {
-//            return EntitySQLProvider.buildInsertSQL(providerContext);
-//        }
-//        if (methodName.startsWith("updateObj")) {
-//            return EntitySQLProvider.buildUpdateObjSQL(providerContext, argMap);
-//        }
-//        if (methodName.startsWith("update")) {
-//            return EntitySQLProvider.buildUpdateSQL(providerContext, argMap);
-//        }
-//        if (methodName.startsWith("delete")) {
-//            return EntitySQLProvider.buildDeleteSQL(providerContext, argMap);
-//        }
-//        if (methodName.startsWith("select") || methodName.startsWith("find") || methodName.startsWith("query")) {
-//            return EntitySQLProvider.buildSelectSQL(providerContext, argMap);
-//        }
-//        if (methodName.startsWith("count")) {
-//            return EntitySQLProvider.buildCountSQL(providerContext, argMap);
-//        }
-//        throw new RuntimeException("methodName:" + methodName + " can not matched : insert, updateObj, update, delete, select, find, query, count");
-//    }
 }

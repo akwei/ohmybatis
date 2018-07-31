@@ -24,61 +24,64 @@ How to use
 * pom import dependency
 
 ````xml
-<dependency>
-    <groupId>org.mybatis</groupId>
-    <artifactId>mybatis</artifactId>
-    <version>3.4.6</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>org.mybatis</groupId>
-    <artifactId>mybatis-spring</artifactId>
-    <version>1.3.2</version>
-    <scope>provided</scope>
-</dependency>
-<!-- spring -->
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-    <version>${org.springframework.version}</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-context</artifactId>
-    <version>${org.springframework.version}</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-api</artifactId>
-    <version>${slf4j.version}</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-lang3</artifactId>
-    <version>3.7</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>javax.persistence</groupId>
-    <artifactId>javax.persistence-api</artifactId>
-    <version>2.2</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>25.1-jre</version>
-    <scope>provided</scope>
-</dependency>
-<dependency>
-    <groupId>cglib</groupId>
-    <artifactId>cglib</artifactId>
-    <version>3.2.7</version>
-    <scope>provided</scope>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>3.4.6</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis-spring</artifactId>
+        <version>1.3.2</version>
+        <scope>provided</scope>
+    </dependency>
+    <!-- spring -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${org.springframework.version}</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${org.springframework.version}</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.7</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>javax.persistence</groupId>
+        <artifactId>javax.persistence-api</artifactId>
+        <version>2.2</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>25.1-jre</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <version>3.2.7</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+
 ````
 
 * write spring application.xml
@@ -147,16 +150,32 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+/**
+ * all method parameter.name as same as bean's field.name, if not, use @Param
+ */
 public interface UserMapper extends MapperIface<User> {
 
+    //insert will ignore @Param
+    //use auto incr id
     @Options(useGeneratedKeys = true, keyProperty = "userid")
     void insert(User user);
 
     //delete from user where userid=#{userid}
-    void delete1(@Param("userid") long userid);
+    void deleteByUserid1(@Param("userid") long userid);
 
     //delete from user where sex=#{sex} and enableflag=#{enableflag}
-    void delete2(Integer sex, boolean enableflag);
+    void deleteBySexAndEnableflag2(Integer sex, boolean enableflag);
+
+    //delete from user where userid=#{id}
+    void deleteByUserid3(@Param("id") long userid);
+
+    //nick as same as bean's field name
+    //newCreateTime not as same as bean's field createtime
+    //update user set nick=#{nick}, createtime=#{ctime} where userid=#{userid}
+    int updateNickAndCreateTime1(int userid, @UpdateField String nick, @UpdateField @Param("ctime") long createtime);
+
+    //update user set nick=#{nick}, createtime=#{createtime} where userid=#{userid}
+    int updateNickAndCreateTime2(int userid, @UpdateField String nick, @UpdateField long createtime);
 
     //select * from user where userid=#{userid}
     User getById(@Param("userid") long userid);
@@ -184,6 +203,7 @@ public interface UserMapper extends MapperIface<User> {
 
 ````
 
+* **all mapper's parameter.name in methods as same as bean's field.name, if not, use @Param** 
 * invoke mapper method
 
 ```` java
@@ -256,10 +276,13 @@ public interface UserMapper extends MapperIface<User> {
 
         //delete
         //delete from user where userid=#{userid}
-        this.userMapper.delete1(1);
+        this.userMapper.deleteByUserid1(1);
 
         //delete from user where sex=#{sex} and enableflag=#{enableflag}
-        this.userMapper.delete2(1, true);
+        this.userMapper.deleteBySexAndEnableflag2(1, true);
+
+        //delete from user where userid=#{id}
+        this.userMapper.deleteByUserid3(1);
 
         this.userMapper.getList2(1, true, "a", 0, 2, 0, 10);
 

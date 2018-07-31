@@ -3,6 +3,7 @@ package info.akwei.ohmybatis.sqlprovider;
 import info.akwei.ohmybatis.annotations.*;
 import info.akwei.ohmybatis.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 
 import javax.persistence.Id;
 import java.lang.reflect.Field;
@@ -256,7 +257,7 @@ class EntityInfo {
                 if (maxValue.include()) {
                     sb.append("=");
                 }
-                sb.append("#{").append(parameter.getName()).append("}");
+                this.buildParameterSb(parameter, sb);
                 if (i < lastIdx) {
                     sb.append(" and ");
                 }
@@ -280,7 +281,7 @@ class EntityInfo {
                 if (minValue.include()) {
                     sb.append("=");
                 }
-                sb.append("#{").append(parameter.getName()).append("}");
+                this.buildParameterSb(parameter, sb);
                 if (i < lastIdx) {
                     sb.append(" and ");
                 }
@@ -301,7 +302,7 @@ class EntityInfo {
                 }
                 sb.append(fieldInfo.getColumn());
                 sb.append("!=");
-                sb.append("#{").append(parameter.getName()).append("}");
+                this.buildParameterSb(parameter, sb);
                 if (i < lastIdx) {
                     sb.append(" and ");
                 }
@@ -325,7 +326,7 @@ class EntityInfo {
                 if (like.left()) {
                     sb.append("\"%\"");
                 }
-                sb.append("#{").append(parameter.getName()).append("}");
+                this.buildParameterSb(parameter, sb);
                 if (like.right()) {
                     sb.append("\"%\"");
                 }
@@ -341,12 +342,24 @@ class EntityInfo {
             if (fieldInfo == null) {
                 throw new NullPointerException(fieldName + " can not find fieldInfo in map");
             }
-            sb.append(fieldInfo.getColumn()).append("=").append("#{").append(parameter.getName()).append("}");
+            sb.append(fieldInfo.getColumn()).append("=");
+            this.buildParameterSb(parameter, sb);
             if (i < lastIdx) {
                 sb.append(" and ");
             }
             i++;
         }
+    }
+
+    private void buildParameterSb(Parameter parameter, StringBuilder sb) {
+        Param param = parameter.getAnnotation(Param.class);
+        sb.append("#{");
+        if (param != null) {
+            sb.append(param.value());
+        } else {
+            sb.append(parameter.getName());
+        }
+        sb.append("}");
     }
 
 

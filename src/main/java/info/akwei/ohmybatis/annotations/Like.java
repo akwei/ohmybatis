@@ -7,6 +7,9 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 public @interface Like {
 
+    /**
+     * bean's field name
+     */
     String value() default "";
 
     boolean left() default true;

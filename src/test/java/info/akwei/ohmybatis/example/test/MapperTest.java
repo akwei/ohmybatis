@@ -87,10 +87,13 @@ public class MapperTest {
 
         //delete
         //delete from user where userid=#{userid}
-        this.userMapper.delete1(1);
+        this.userMapper.deleteByUserid1(1);
 
         //delete from user where sex=#{sex} and enableflag=#{enableflag}
-        this.userMapper.delete2(1, true);
+        this.userMapper.deleteBySexAndEnableflag2(1, true);
+
+        //delete from user where userid=#{id}
+        this.userMapper.deleteByUserid3(1);
 
         this.userMapper.getList2(1, true, "a", 0, 2, 0, 10);
 
