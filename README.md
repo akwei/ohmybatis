@@ -19,11 +19,68 @@ Notice
 </plugin>
 ````
 
-
 How to use
 ----------
-* import mybatis,version >= 3.4.5
-* use mybatis-spring, version >= 1.3.2
+* pom import dependency
+
+````xml
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis</artifactId>
+    <version>3.4.6</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.mybatis</groupId>
+    <artifactId>mybatis-spring</artifactId>
+    <version>1.3.2</version>
+    <scope>provided</scope>
+</dependency>
+<!-- spring -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-beans</artifactId>
+    <version>${org.springframework.version}</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>${org.springframework.version}</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>${slf4j.version}</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.7</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>javax.persistence</groupId>
+    <artifactId>javax.persistence-api</artifactId>
+    <version>2.2</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>25.1-jre</version>
+    <scope>provided</scope>
+</dependency>
+<dependency>
+    <groupId>cglib</groupId>
+    <artifactId>cglib</artifactId>
+    <version>3.2.7</version>
+    <scope>provided</scope>
+</dependency>
+````
+
 * write spring application.xml
  
 ```` xml

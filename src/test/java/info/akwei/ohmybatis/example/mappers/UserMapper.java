@@ -8,6 +8,9 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+/**
+ * all mapper's parameter.name in methods as same as bean's field.name, if not, use @Param
+ */
 public interface UserMapper extends MapperIface<User> {
 
     //use auto incr id

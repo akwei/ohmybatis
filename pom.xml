@@ -130,7 +130,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
         <!-- commons log 兼容 -->
         <dependency>
@@ -164,7 +164,6 @@
             <version>${log4j.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- sl4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -189,7 +188,6 @@
             <version>25.1-jre</version>
             <scope>provided</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/cglib/cglib -->
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
