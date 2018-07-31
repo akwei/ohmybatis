@@ -1,6 +1,6 @@
 package info.akwei.ohmybatis;
 
-import info.akwei.ohmybatis.sqlprovider.EntitySQLProvider;
+import info.akwei.ohmybatis.sqlprovider.SimpleSQLProvider;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.binding.MapperMethod;
@@ -386,29 +386,17 @@ public class OhMapperAnnotationBuilder extends MapperAnnotationBuilder {
         String methodName = method.getName();
         SqlProviderPinocchio sproxy = new SqlProviderPinocchio();
         if (methodName.startsWith("insert")) {
-            sproxy.setClazz(InsertProvider.class);
-            sproxy.setOriType(EntitySQLProvider.class);
-            sproxy.setOriMethod(EntitySQLProvider.INSERT);
+            sproxy.setOriMethod(SimpleSQLProvider.INSERT);
         } else if (methodName.startsWith("updateObj")) {
-            sproxy.setClazz(UpdateProvider.class);
-            sproxy.setOriType(EntitySQLProvider.class);
-            sproxy.setOriMethod(EntitySQLProvider.UPDATE_OBJ);
+            sproxy.setOriMethod(SimpleSQLProvider.UPDATE_OBJ);
         } else if (methodName.startsWith("update")) {
-            sproxy.setClazz(UpdateProvider.class);
-            sproxy.setOriType(EntitySQLProvider.class);
-            sproxy.setOriMethod(EntitySQLProvider.UPDATE);
+            sproxy.setOriMethod(SimpleSQLProvider.UPDATE);
         } else if (methodName.startsWith("delete")) {
-            sproxy.setClazz(DeleteProvider.class);
-            sproxy.setOriType(EntitySQLProvider.class);
-            sproxy.setOriMethod(EntitySQLProvider.DELETE);
+            sproxy.setOriMethod(SimpleSQLProvider.DELETE);
         } else if (methodName.startsWith("get") || methodName.startsWith("select") || methodName.startsWith("find") || methodName.startsWith("query")) {
-            sproxy.setClazz(SelectProvider.class);
-            sproxy.setOriType(EntitySQLProvider.class);
-            sproxy.setOriMethod(EntitySQLProvider.SELECT);
+            sproxy.setOriMethod(SimpleSQLProvider.SELECT);
         } else if (methodName.startsWith("count")) {
-            sproxy.setClazz(SelectProvider.class);
-            sproxy.setOriType(EntitySQLProvider.class);
-            sproxy.setOriMethod(EntitySQLProvider.COUNT);
+            sproxy.setOriMethod(SimpleSQLProvider.COUNT);
         } else {
             throw new RuntimeException("methodName:" + methodName + " can not matched : insert, updateObj, update, delete, get, select, find, query, count");
         }

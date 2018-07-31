@@ -1,7 +1,7 @@
 package info.akwei.ohmybatis.sqlprovider;
 
 import info.akwei.ohmybatis.annotations.AfterWhere;
-import info.akwei.ohmybatis.mapper.BaseMapper;
+import info.akwei.ohmybatis.MapperIface;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.annotation.ProviderContext;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EntitySQLProvider {
+public class SimpleSQLProvider {
 
     public static final String INSERT = "buildInsertSQL";
 
@@ -201,7 +201,7 @@ public class EntitySQLProvider {
         ParameterizedType type = null;
         for (Type iface : clazz.getGenericInterfaces()) {
             ParameterizedType otype = (ParameterizedType) iface;
-            if (otype.getRawType().equals(BaseMapper.class)) {
+            if (otype.getRawType().equals(MapperIface.class)) {
                 type = otype;
                 break;
             }

@@ -15,7 +15,7 @@
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="user" value="root"/>
         <property name="password" value="asdasd"/>
-        <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/db_vote?useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/db_ohmybatis?useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="idleConnectionTestPeriod" value="60"/>
         <property name="preferredTestQuery" value="select 1"/>
         <property name="minPoolSize" value="2"/>
@@ -35,17 +35,9 @@
         <property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
     </bean>
 
-    <!--  org.mybatis.spring.SqlSessionFactoryBean-->
     <bean id="sqlSessionFactoryBean" class="info.akwei.ohmybatis.OhSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="configuration" ref="configuration"/>
         <property name="mapperLocations" value="classpath*:info/akwei/ohmybatis/example/mappers/*Mapper.xml"/>
     </bean>
-    <!--<bean id="mapperAOP" class="info.akwei.ohmybatis.aop.MapperAOP"/>-->
-    <!--<aop:config proxy-target-class="true">-->
-        <!--<aop:aspect ref="mapperAOP" order="1">-->
-            <!--<aop:pointcut id="mapperAOPPointcut" expression="execution(* info.akwei.ohmybatis.example.mappers.*(..))"/>-->
-            <!--<aop:around method="process" pointcut-ref="mapperAOPPointcut"/>-->
-        <!--</aop:aspect>-->
-    <!--</aop:config>-->
 </beans>

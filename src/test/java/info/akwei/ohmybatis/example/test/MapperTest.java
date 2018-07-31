@@ -1,97 +1,77 @@
 package info.akwei.ohmybatis.example.test;
 
-import info.akwei.ohmybatis.example.entity.VoteItem;
-import info.akwei.ohmybatis.example.mappers.VoteItemMapper;
+import info.akwei.ohmybatis.example.entity.User;
+import info.akwei.ohmybatis.example.mappers.UserMapper;
 import info.akwei.ohmybatis.sqlprovider.EntityCopier;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext.xml"})
+@Transactional
 public class MapperTest {
 
     @Resource
-    private VoteItemMapper voteItemMapper;
-
-    @Test
-    public void getVoteItem() {
-        VoteItem voteItem = this.voteItemMapper.getByVoteItemId(1);
-    }
-
-    @Test
-    public void getVoteItem2() {
-        VoteItem voteItem = this.voteItemMapper.getByVoteItemId2(1);
-        Assert.assertNotNull(voteItem);
-    }
-
-//    @Test
-//    public void getMapInIds() {
-//        Map<Integer, VoteItem> map = this.voteItemService.getMapInIds(Arrays.asList(1, 2, 3));
-//        System.out.println(map);
-//    }
+    private UserMapper userMapper;
 
     @Test
     public void insert() {
-        VoteItem voteItem = new VoteItem();
-        voteItem.setTitle("akweiwei");
-        voteItem.setCreateTime(System.currentTimeMillis());
-        this.voteItemMapper.insert(voteItem);
-        System.out.println(voteItem.getVoteItemId());
-    }
+        //insert user
+        User user = new User();
+        user.setAddr("北京市");
+        user.setEnableflag(true);
+        user.setNick("akwei");
+        user.setLevel(1);
+        this.userMapper.insert(user);
+        // auto_incr for userid
+        Assert.assertTrue(user.getUserid() > 0);
 
-    @Test
-    public void insert2() {
-        VoteItem voteItem = new VoteItem();
-        voteItem.setTitle("akweiwei");
-        voteItem.setCreateTime(System.currentTimeMillis());
-        this.voteItemMapper.insert2(voteItem);
-        System.out.println(voteItem.getVoteItemId());
-    }
+        //insert another user
+        User other = new User();
+        other.setNick("danny");
+        other.setSex(1);
+        other.setAddr("China");
+        other.setEnableflag(false);
+        user.setLevel(2);
+        this.userMapper.insert(user);
 
-    @Test
-    public void update() {
-        VoteItem voteItem = this.voteItemMapper.getByVoteItemId2(1);
-        VoteItem old = new VoteItem();
-        EntityCopier.copy(voteItem, old);
-        voteItem.setTitle("hhhhhhhhh" + System.currentTimeMillis());
-        int res = this.voteItemMapper.updateObj(voteItem, old);
-    }
+        //select user
+        User user1 = this.userMapper.getById(user.getUserid());
 
-    @Test
-    public void delete() {
-        int res = this.voteItemMapper.delete(0);
-        Assert.assertEquals(0, res);
-    }
+        //equals
+        Assert.assertNotNull(user1);
+        Assert.assertEquals(user.getAddr(), user1.getAddr());
+        Assert.assertEquals(user.isEnableflag(), user1.isEnableflag());
+        Assert.assertEquals(user.getNick(), user1.getNick());
 
-    @Test
-    public void delete2() {
-        int res = this.voteItemMapper.delete2(VoteItem.class, 1, "hhh");
-        Assert.assertEquals(0, res);
-    }
+        //update
+        user.setNick("akweiwei");
+        int ret = this.userMapper.updateObj(user, null);
 
-    @Test
-    public void select() {
-        this.voteItemMapper.getListByCdn(1, 2, "akwei",
-                System.currentTimeMillis() - 1000000,
-                System.currentTimeMillis(), 0, 10);
-    }
+        //must update success
+        Assert.assertEquals(1, ret);
 
-    @Test
-    public void select2() throws Exception {
-        List<VoteItem> list = this.voteItemMapper.getListByCdn2("akwei", 0, 2);
-        Assert.assertNotNull(list);
-    }
+        //if you want to update as :  update user set nick=? where userid=?
 
-    @Test
-    public void count() {
-        int count = this.voteItemMapper.count(VoteItem.class, 26, "akweiwei");
-        System.out.println(count);
+        //1 copy user to old
+        User old = new User();
+        EntityCopier.copy(user, old);
+
+        //2 change user property
+        user.setNick("akweiwei11");
+
+        //3 invoke updateObj, set the second parameter = old
+        ret = this.userMapper.updateObj(user, old);
+
+        //must update success
+        Assert.assertEquals(1, ret);
+
     }
 
 }

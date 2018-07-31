@@ -1,7 +1,7 @@
 package info.akwei.ohmybatis.sqlprovider;
 
 import info.akwei.ohmybatis.annotations.*;
-import info.akwei.ohmybatis.util.CommonUtils;
+import info.akwei.ohmybatis.CommonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Id;

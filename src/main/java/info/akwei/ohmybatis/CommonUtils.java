@@ -1,4 +1,4 @@
-package info.akwei.ohmybatis.util;
+package info.akwei.ohmybatis;
 
 import java.lang.reflect.Field;
 import java.util.Collection;

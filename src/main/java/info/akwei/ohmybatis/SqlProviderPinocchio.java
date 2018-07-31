@@ -1,44 +1,22 @@
 package info.akwei.ohmybatis;
 
-import java.lang.annotation.Annotation;
+import info.akwei.ohmybatis.sqlprovider.SimpleSQLProvider;
 
 public class SqlProviderPinocchio {
 
-    private Class<? extends Annotation> clazz;
-
-    private Class oriType;
-
     private String oriMethod;
 
-    public Class<? extends Annotation> getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(Class<? extends Annotation> clazz) {
-        this.clazz = clazz;
-    }
-
-    public Class getOriType() {
-        return oriType;
-    }
-
+    @SuppressWarnings("unused") //通过反射调用
     public Class type() {
-        return oriType;
+        return SimpleSQLProvider.class;
     }
 
-    public void setOriType(Class oriType) {
-        this.oriType = oriType;
-    }
-
-    public String getOriMethod() {
-        return oriMethod;
-    }
-
+    @SuppressWarnings("unused") //通过反射调用
     public String method() {
         return oriMethod;
     }
 
-    public void setOriMethod(String oriMethod) {
+    void setOriMethod(String oriMethod) {
         this.oriMethod = oriMethod;
     }
 }
