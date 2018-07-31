@@ -29,6 +29,7 @@ public class MapperTest {
         user.setEnableflag(true);
         user.setNick("akwei");
         user.setLevel(1);
+        user.setCreatetime(System.currentTimeMillis());
         this.userMapper.insert(user);
         // auto_incr for userid
         Assert.assertTrue(user.getUserid() > 0);
@@ -39,8 +40,9 @@ public class MapperTest {
         other.setSex(1);
         other.setAddr("China");
         other.setEnableflag(true);
-        user.setLevel(2);
-        this.userMapper.insert(user);
+        other.setLevel(2);
+        other.setCreatetime(System.currentTimeMillis());
+        this.userMapper.insert(other);
 
         //select * from user where userid=#{userid}
         User user1 = this.userMapper.getById(user.getUserid());
@@ -90,7 +92,7 @@ public class MapperTest {
         //delete from user where sex=#{sex} and enableflag=#{enableflag}
         this.userMapper.delete2(1, true);
 
-        this.userMapper.getList2(1, true, "ak", 0, 2, 0, 10);
+        this.userMapper.getList2(1, true, "a", 0, 2, 0, 10);
 
         //if you has more complicated select sql or multiple tables select sql,please use xml or @Select do it
     }

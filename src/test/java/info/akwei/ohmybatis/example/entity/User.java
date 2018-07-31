@@ -1,11 +1,17 @@
 package info.akwei.ohmybatis.example.entity;
 
+import info.akwei.ohmybatis.annotations.NotColumn;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+//use jpa interface annotation
+//name = table name
 @Table(name = "user")
 public class User {
 
+    //mark userid is a primary key of table user.
+    //table can have multi @Id property, like composite-id
     @Id
     private long userid;
 
@@ -18,6 +24,12 @@ public class User {
     private boolean enableflag;
 
     private int level;
+
+    private long createtime;
+
+    //use @NotColumn mark the property is not a table column
+    @NotColumn
+    private String otherField;
 
     public long getUserid() {
         return userid;
@@ -65,5 +77,21 @@ public class User {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public String getOtherField() {
+        return otherField;
+    }
+
+    public void setOtherField(String otherField) {
+        this.otherField = otherField;
+    }
+
+    public long getCreatetime() {
+        return createtime;
+    }
+
+    public void setCreatetime(long createtime) {
+        this.createtime = createtime;
     }
 }

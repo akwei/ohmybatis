@@ -26,7 +26,7 @@ public interface UserMapper extends MapperIface<User> {
     //select * from user where sex=#{sex} and enableflag=#{enableflag} order by createtime desc limit #{offset} , #{size}
     //sometimes select have order by, group by etc sql, we can use @AfterWhere to help us for these situation
     //AfterWhere value must use table's column name
-    @AfterWhere("order by createtime desc limit #{offset} #{size}")
+    @AfterWhere("order by createtime desc limit #{offset} , #{size}")
     List<User> getList(Integer sex, boolean enableflag, @NotColumn int offset, @NotColumn int size);
 
     //select count(*) from user where sex=#{sex} and enableflag=#{enableflag}
@@ -34,7 +34,7 @@ public interface UserMapper extends MapperIface<User> {
 
     //look a bit of complicated example for single table select:
     //select * from user where sex=#{sex} and enableflag=#{enableflag} and nick like \"%\"#{nick}\"%\" and level>=#{minLevel} and level<=#{maxLevel} order by createtime desc limit #{offset} , #{size}
-    @AfterWhere("order by createtime desc limit #{offset} #{size}")
+    @AfterWhere("order by createtime desc limit #{offset} , #{size}")
     List<User> getList2(Integer sex,
                         boolean enableflag,
                         @Like("nick") String nick,
