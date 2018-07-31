@@ -193,12 +193,12 @@ public class OhMapperAnnotationBuilder extends MapperAnnotationBuilder {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Discriminator applyDiscriminator(String resultMapId, Class<?> resultType, TypeDiscriminator discriminator) {
         if (discriminator != null) {
             String column = discriminator.column();
             Class<?> javaType = discriminator.javaType() == void.class ? String.class : discriminator.javaType();
             JdbcType jdbcType = discriminator.jdbcType() == JdbcType.UNDEFINED ? null : discriminator.jdbcType();
-            @SuppressWarnings("unchecked")
             Class<? extends TypeHandler<?>> typeHandler = (Class<? extends TypeHandler<?>>)
                     (discriminator.typeHandler() == UnknownTypeHandler.class ? null : discriminator.typeHandler());
             Case[] cases = discriminator.cases();
