@@ -81,7 +81,6 @@ How to use
         <scope>provided</scope>
     </dependency>
 </dependencies>
-
 ````
 
 * write spring application.xml
@@ -151,7 +150,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * all method parameter.name as same as bean's field.name, if not, use @Param
+ * all mapper's parameter name in methods as same as bean's field name
  */
 public interface UserMapper extends MapperIface<User> {
 
@@ -191,6 +190,8 @@ public interface UserMapper extends MapperIface<User> {
 
     //look a bit of complicated example for single table select:
     //select * from user where sex=#{sex} and enableflag=#{enableflag} and nick like \"%\"#{nick}\"%\" and level>=#{minLevel} and level<=#{maxLevel} order by createtime desc limit #{offset} , #{size}
+    // level as same as bean's level
+    // nick as same as bean's nick
     @AfterWhere("order by createtime desc limit #{offset} , #{size}")
     List<User> getList2(Integer sex,
                         boolean enableflag,
@@ -201,6 +202,7 @@ public interface UserMapper extends MapperIface<User> {
 
 }
 
+
 ````
 
 * **all mapper's parameter.name in methods as same as bean's field.name, if not, use @Param** 
@@ -210,7 +212,6 @@ public interface UserMapper extends MapperIface<User> {
     @Resource
     private UserMapper userMapper;
 
-    @Test
     public void insert() {
         //insert user
         User user = new User();
