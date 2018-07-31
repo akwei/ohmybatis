@@ -29,11 +29,16 @@ How to use
 ```` xml
 <mybatis:scan base-package="info.akwei.ohmybatis.example.mappers"/>
 
+<bean id="configuration" class="org.apache.ibatis.session.Configuration">
+    <property name="mapUnderscoreToCamelCase" value="true"/>
+    <property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
+</bean>
+
 <!- use special sqlSessionFactoryBean ->
 <bean id="sqlSessionFactoryBean" class="info.akwei.ohmybatis.OhSqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-        <property name="configuration" ref="configuration"/>
-    </bean>
+    <property name="dataSource" ref="dataSource"/>
+    <property name="configuration" ref="configuration"/>
+</bean>
 
 ````
 
