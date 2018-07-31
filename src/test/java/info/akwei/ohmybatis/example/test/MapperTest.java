@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext.xml"})
@@ -37,11 +38,11 @@ public class MapperTest {
         other.setNick("danny");
         other.setSex(1);
         other.setAddr("China");
-        other.setEnableflag(false);
+        other.setEnableflag(true);
         user.setLevel(2);
         this.userMapper.insert(user);
 
-        //select user
+        //select * from user where userid=#{userid}
         User user1 = this.userMapper.getById(user.getUserid());
 
         //equals
@@ -57,7 +58,7 @@ public class MapperTest {
         //must update success
         Assert.assertEquals(1, ret);
 
-        //if you want to update as :  update user set nick=? where userid=?
+        //if you want to update as :  update user set nick=#{nick} where userid=#{userid}
 
         //1 copy user to old
         User old = new User();
@@ -72,6 +73,26 @@ public class MapperTest {
         //must update success
         Assert.assertEquals(1, ret);
 
+        //select
+        //simple select: select * from user where sex=#{sex} and enableflag=#{enableflag} order by createtime desc limit #{offset} , #{size}
+        List<User> list = this.userMapper.getList(1, true, 0, 10);
+        Assert.assertNotNull(list);
+        Assert.assertEquals(1, list.size());
+
+        //simple count: select count(*) from user where sex=#{sex} and enableflag=#{enableflag}
+        int count = this.userMapper.count(1, true);
+        Assert.assertEquals(1, count);
+
+        //delete
+        //delete from user where userid=#{userid}
+        this.userMapper.delete1(1);
+
+        //delete from user where sex=#{sex} and enableflag=#{enableflag}
+        this.userMapper.delete2(1, true);
+
+        this.userMapper.getList2(1, true, "ak", 0, 2, 0, 10);
+
+        //if you has more complicated select sql or multiple tables select sql,please use xml or @Select do it
     }
 
 }
