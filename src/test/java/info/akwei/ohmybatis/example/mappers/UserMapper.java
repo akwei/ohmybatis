@@ -49,6 +49,8 @@ public interface UserMapper extends MapperIface<User> {
 
     //look a bit of complicated example for single table select:
     //select * from user where sex=#{sex} and enableflag=#{enableflag} and nick like \"%\"#{nick}\"%\" and level>=#{minLevel} and level<=#{maxLevel} order by createtime desc limit #{offset} , #{size}
+    // level as same as bean's level
+    // nick as same as bean's nick
     @AfterWhere("order by createtime desc limit #{offset} , #{size}")
     List<User> getList2(Integer sex,
                         boolean enableflag,

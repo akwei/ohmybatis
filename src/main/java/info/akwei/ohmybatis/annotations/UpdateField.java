@@ -17,8 +17,4 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 public @interface UpdateField {
 
-    /**
-     * bean's field name
-     */
-    String value() default "";
 }
