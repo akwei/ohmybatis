@@ -46,7 +46,7 @@ public class SimpleSQLProvider {
     public static String buildInsertSQL(ProviderContext providerContext) {
         Class<?>[] parameterTypes = providerContext.getMapperMethod().getParameterTypes();
         Class<?> entityClazz;
-        if (parameterTypes == null || parameterTypes.length != 1) {
+        if (parameterTypes.length != 1) {
             throw new IllegalArgumentException(providerContext.getMapperMethod().getName() +
                     "insert method must has only one argument. that is entity object");
         }
@@ -161,7 +161,20 @@ public class SimpleSQLProvider {
         if (afterWhere != null) {
             afterWhereSub = afterWhere.value();
         }
-        return entityInfo.buildSelectSQL(table.name(), params, afterWhereSub);
+        boolean hasForUpdate = false;
+        boolean forUpdate = false;
+        i = 1;
+        for (Parameter param : params) {
+            if (param.getName().equalsIgnoreCase("forUpdate")) {
+                Object forUpdateParamValue = argMap.get("param" + i);
+                if (forUpdateParamValue instanceof Boolean) {
+                    forUpdate = (Boolean) forUpdateParamValue;
+                    break;
+                }
+            }
+            i++;
+        }
+        return entityInfo.buildSelectSQL(table.name(), params, afterWhereSub, forUpdate);
     }
 
     @SuppressWarnings("unused") //某些代码自动调用

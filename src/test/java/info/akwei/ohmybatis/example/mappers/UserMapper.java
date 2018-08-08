@@ -38,6 +38,8 @@ public interface UserMapper extends MapperIface<User> {
     //select * from user where userid=#{userid}
     User getById(@Param("userid") long userid);
 
+    User getById2(long userid, boolean forUpdate);
+
     //select * from user where sex=#{sex} and enableflag=#{enableflag} order by createtime desc limit #{offset} , #{size}
     //sometimes select have order by, group by etc sql, we can use @AfterWhere to help us for these situation
     //AfterWhere value must use table's column name

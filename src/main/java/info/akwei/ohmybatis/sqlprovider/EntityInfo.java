@@ -1,7 +1,7 @@
 package info.akwei.ohmybatis.sqlprovider;
 
-import info.akwei.ohmybatis.annotations.*;
 import info.akwei.ohmybatis.CommonUtils;
+import info.akwei.ohmybatis.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 
@@ -201,7 +201,7 @@ class EntityInfo {
         return sb.toString();
     }
 
-    String buildSelectSQL(String tableName, List<Parameter> parameters, String afterWhere) {
+    String buildSelectSQL(String tableName, List<Parameter> parameters, String afterWhere, boolean forUpdate) {
         StringBuilder sb = new StringBuilder();
         sb.append("select * from ").append(tableName);
         if (CommonUtils.isEmpty(parameters)) {
@@ -210,6 +210,9 @@ class EntityInfo {
         this.buildWhereStringBuffer(sb, parameters);
         if (afterWhere != null) {
             sb.append(" ").append(afterWhere);
+        }
+        if (forUpdate) {
+            sb.append(" for update");
         }
         return sb.toString();
     }
@@ -232,9 +235,13 @@ class EntityInfo {
         List<Parameter> whereParameters = new ArrayList<>();
         for (Parameter parameter : parameters) {
             NotColumn notColumn = parameter.getAnnotation(NotColumn.class);
-            if (notColumn == null) {
-                whereParameters.add(parameter);
+            if (notColumn != null) {
+                continue;
             }
+            if (parameter.getName().equalsIgnoreCase("forUpdate")) {
+                continue;
+            }
+            whereParameters.add(parameter);
         }
 
         int i = 0;

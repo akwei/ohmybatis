@@ -97,7 +97,15 @@ public class MapperTest {
 
         this.userMapper.getList2(1, true, "a", 0, 2, 0, 10);
 
+        //if you want to use for update ,must has one boolean parameter named forUpdate. you can set value true / false
+        this.userMapper.getById2(1, true);
+
+        //if parameter forUpdate set value false,sql like:
+        //select * from user where userid=?
+        this.userMapper.getById2(1, false);
+
         //if you has more complicated select sql or multiple tables select sql,please use xml or @Select do it
+
     }
 
 }
