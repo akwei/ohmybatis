@@ -1,6 +1,5 @@
-package com.github.akwei.ohmybatis.sqlprovider;
+package com.github.akwei.ohmybatis;
 
-import com.github.akwei.ohmybatis.CommonUtils;
 import com.github.akwei.ohmybatis.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;

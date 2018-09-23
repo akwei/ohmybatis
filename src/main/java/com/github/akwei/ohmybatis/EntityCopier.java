@@ -1,4 +1,4 @@
-package com.github.akwei.ohmybatis.sqlprovider;
+package com.github.akwei.ohmybatis;
 
 import net.sf.cglib.beans.BeanCopier;
 

@@ -3,9 +3,9 @@ package com.github.akwei.ohmybatis;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-public class CommonUtils {
+class CommonUtils {
 
-    public static Object getFieldValue(Field field, Object target) {
+    static Object getFieldValue(Field field, Object target) {
         try {
             return field.get(target);
         } catch (IllegalAccessException ex) {
@@ -14,7 +14,7 @@ public class CommonUtils {
         }
     }
 
-    public static boolean isEmpty(Collection<?> collection) {
+    static boolean isEmpty(Collection<?> collection) {
         return (collection == null || collection.isEmpty());
     }
 }

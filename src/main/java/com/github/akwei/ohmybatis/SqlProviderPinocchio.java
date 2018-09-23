@@ -1,7 +1,5 @@
 package com.github.akwei.ohmybatis;
 
-import com.github.akwei.ohmybatis.sqlprovider.SimpleSQLProvider;
-
 public class SqlProviderPinocchio {
 
     private String oriMethod;

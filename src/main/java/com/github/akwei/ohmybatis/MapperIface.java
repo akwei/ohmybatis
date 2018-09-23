@@ -1,6 +1,5 @@
 package com.github.akwei.ohmybatis;
 
-import com.github.akwei.ohmybatis.sqlprovider.SimpleSQLProvider;
 import org.apache.ibatis.annotations.UpdateProvider;
 
 public interface MapperIface<T> {

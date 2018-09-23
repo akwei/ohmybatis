@@ -1,6 +1,5 @@
-package com.github.akwei.ohmybatis.sqlprovider;
+package com.github.akwei.ohmybatis;
 
-import com.github.akwei.ohmybatis.MapperIface;
 import com.github.akwei.ohmybatis.annotations.AfterWhere;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
