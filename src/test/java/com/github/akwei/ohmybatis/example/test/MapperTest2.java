@@ -1,0 +1,26 @@
+package com.github.akwei.ohmybatis.example.test;
+
+import com.github.akwei.ohmybatis.example.entity.User;
+import com.github.akwei.ohmybatis.example.mappers.UserMapper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration({"/applicationContext.xml"})
+@Transactional
+public class MapperTest2 {
+
+    @Resource
+    private UserMapper userMapper;
+
+    @Test
+    public void lock() throws Exception {
+        User user = this.userMapper.getById2(10000, true);
+        Thread.sleep(100000);
+    }
+}

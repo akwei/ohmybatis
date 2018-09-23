@@ -35,7 +35,7 @@
         <property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
     </bean>
 
-    <bean id="sqlSessionFactoryBean" class="info.akwei.ohmybatis.OhSqlSessionFactoryBean">
+    <bean id="sqlSessionFactoryBean" class="com.github.akwei.ohmybatis.OhSqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <property name="configuration" ref="configuration"/>
     </bean>
