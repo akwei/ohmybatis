@@ -384,7 +384,7 @@ public class OhMapperAnnotationBuilder extends MapperAnnotationBuilder {
     private SqlSource getSqlSourceFromAnnotations(Method method) {
         String methodName = method.getName();
         SqlProviderPinocchio sproxy = new SqlProviderPinocchio();
-        if (methodName.startsWith("insert")) {
+        if (methodName.startsWith("insert") || methodName.startsWith("batchInsert")) {
             sproxy.setOriMethod(SimpleSQLProvider.INSERT);
         } else if (methodName.startsWith("updateObj")) {
             sproxy.setOriMethod(SimpleSQLProvider.UPDATE_OBJ);
@@ -397,7 +397,7 @@ public class OhMapperAnnotationBuilder extends MapperAnnotationBuilder {
         } else if (methodName.startsWith("count")) {
             sproxy.setOriMethod(SimpleSQLProvider.COUNT);
         } else {
-            throw new RuntimeException("methodName:" + methodName + " can not matched : insert, updateObj, update, delete, get, select, find, query, count");
+            throw new RuntimeException("methodName:" + methodName + " can not matched : insert, batchInsert, updateObj, update, delete, get, select, find, query, count");
         }
         return new ProviderSqlSource(assistant.getConfiguration(), sproxy, type, method);
     }
@@ -413,7 +413,7 @@ public class OhMapperAnnotationBuilder extends MapperAnnotationBuilder {
 
     private static SqlCommandType getSqlCommandType(Method method) {
         String methodName = method.getName();
-        if (methodName.startsWith("insert")) {
+        if (methodName.startsWith("insert") || methodName.startsWith("batchInsert")) {
             return SqlCommandType.INSERT;
         }
         if (methodName.startsWith("updateObj")) {
