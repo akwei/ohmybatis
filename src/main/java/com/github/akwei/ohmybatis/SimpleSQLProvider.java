@@ -42,19 +42,21 @@ public class SimpleSQLProvider {
     }
 
     @SuppressWarnings("unused") //某些代码自动调用
-    public static String buildInsertSQL(ProviderContext providerContext) {
+    public static String buildInsertSQL(ProviderContext providerContext, Map<String, Object> argMap) {
         Class<?>[] parameterTypes = providerContext.getMapperMethod().getParameterTypes();
         Class<?> entityClazz;
         if (parameterTypes.length != 1) {
             throw new IllegalArgumentException(providerContext.getMapperMethod().getName() +
                     "insert method must has only one argument. that is entity object");
         }
+        Param param = providerContext.getMapperMethod().getParameters()[0].getAnnotation(Param.class);
+        Objects.requireNonNull(param.value(), "method argument must has @param annotation");
         entityClazz = parameterTypes[0];
         Options options = providerContext.getMapperMethod().getAnnotation(Options.class);
         EntityInfo entityInfo = getEntityInfo(entityClazz);
         Table table = entityClazz.getAnnotation(Table.class);
         Objects.requireNonNull(table.name(), entityClazz.getName() + " table name must be not empty");
-        return entityInfo.buildInsertSQL(table.name(), options.useGeneratedKeys());
+        return entityInfo.buildInsertSQL(table.name(), param.value(), options.useGeneratedKeys());
     }
 
     @SuppressWarnings("unused") //某些代码自动调用

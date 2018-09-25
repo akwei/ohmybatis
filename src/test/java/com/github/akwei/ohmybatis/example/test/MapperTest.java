@@ -1,7 +1,7 @@
 package com.github.akwei.ohmybatis.example.test;
 
-import com.github.akwei.ohmybatis.example.entity.User;
 import com.github.akwei.ohmybatis.EntityCopier;
+import com.github.akwei.ohmybatis.example.entity.User;
 import com.github.akwei.ohmybatis.example.mappers.UserMapper;
 import org.junit.Assert;
 import org.junit.Test;

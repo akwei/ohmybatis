@@ -15,8 +15,8 @@ public interface UserMapper extends MapperIface<User> {
 
     //insert will ignore @Param
     //use auto incr id
-    @Options(useGeneratedKeys = true, keyProperty = "userid")
-    void insert(User user);
+    @Options(useGeneratedKeys = true, keyProperty = "user.userid")
+    void insert(@Param("user") User user);
 
     //delete from user where userid=#{userid}
     void deleteByUserid1(@Param("userid") long userid);

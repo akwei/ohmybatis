@@ -67,7 +67,7 @@ class EntityInfo {
         }
     }
 
-    String buildInsertSQL(String tableName, boolean genKey) {
+    String buildInsertSQL(String tableName, String paramName, boolean genKey) {
         StringBuilder sb = new StringBuilder();
         sb.append("insert into ");
         sb.append(tableName);
@@ -90,7 +90,7 @@ class EntityInfo {
         sb.append(") values (");
         k = 0;
         for (FieldInfo fieldInfo : list) {
-            sb.append("#{");
+            sb.append("#{").append(paramName).append('.');
             sb.append(fieldInfo.getField().getName());
             sb.append('}');
             if (k < lastIdx) {
