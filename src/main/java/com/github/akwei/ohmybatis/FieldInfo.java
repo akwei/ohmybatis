@@ -3,6 +3,7 @@ package com.github.akwei.ohmybatis;
 import com.google.common.base.CaseFormat;
 
 import java.lang.reflect.Field;
+import javax.persistence.Id;
 
 class FieldInfo {
 
@@ -13,7 +14,8 @@ class FieldInfo {
     FieldInfo(Field field, boolean mapUnderscoreToCamelCase) {
         this.field = field;
         if (mapUnderscoreToCamelCase) {
-            this.column = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.field.getName());
+            this.column = CaseFormat.LOWER_CAMEL
+                  .to(CaseFormat.LOWER_UNDERSCORE, this.field.getName());
         } else {
             this.column = this.field.getName();
         }
@@ -27,4 +29,7 @@ class FieldInfo {
         return column;
     }
 
+     boolean isId() {
+        return field.getAnnotation(Id.class) != null;
+    }
 }

@@ -1,64 +1,38 @@
 package com.github.akwei.ohmybatis.example.mappers;
 
-import com.github.akwei.ohmybatis.MapperIface;
-import com.github.akwei.ohmybatis.annotations.*;
+import com.github.akwei.ohmybatis.IMapper;
+import com.github.akwei.ohmybatis.OhMyXmlDriver;
+import com.github.akwei.ohmybatis.SQL;
 import com.github.akwei.ohmybatis.example.entity.User;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-
+import java.util.Date;
 import java.util.List;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Lang;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 /**
- * all mapper's parameter name in methods as same as bean's field name
+ * entity must has only one mapper like this class use &lt;User&gt;
  */
-public interface UserMapper extends MapperIface<User> {
+public interface UserMapper extends IMapper<User> {
 
-    //insert will ignore @Param
-    //use auto incr id
-    @Options(useGeneratedKeys = true, keyProperty = "user.userid")
-    void insert(@Param("user") User user);
+    //select * from user where userid in (?,?..)
+    @Lang(OhMyXmlDriver.class)
+    @Select({SQL.SELECT,
+          "where userid $in{userids} order by createtime desc limit #{offset} , #{size}"})
+    List<User> getListInUserids(@Param("userids") List<Long> userids, int offset, int size);
 
-    //delete from user where userid=#{userid}
-    void deleteByUserid1(@Param("userid") long userid);
+    //select count(*) from user where userid in (?,?..)
+    @Lang(OhMyXmlDriver.class)
+    @Select({SQL.COUNT, "where userid $in{userids} order by userid desc"})
+    int countInUserids(@Param("userids") List<Long> userids);
 
-    //delete from user where sex=#{sex} and enableflag=#{enableflag}
-    void deleteBySexAndEnableflag2(Integer sex, boolean enableflag);
+    @Lang(OhMyXmlDriver.class)
+    @Update({SQL.UPDATE, "set createtime=#{createtime} where userid $in{userids}"})
+    int updateInUserids(@Param("userids") List<Long> userids, Date createtime);
 
-    //delete from user where userid=#{id}
-    void deleteByUserid3(@Param("id") long userid);
-
-    //nick as same as bean's field name
-    //newCreateTime not as same as bean's field createtime
-    //update user set nick=#{nick}, createtime=#{ctime} where userid=#{userid}
-    int updateNickAndCreateTime1(int userid, @UpdateField String nick, @UpdateField @Param("ctime") long createtime);
-
-    //update user set nick=#{nick}, createtime=#{createtime} where userid=#{userid}
-    int updateNickAndCreateTime2(int userid, @UpdateField String nick, @UpdateField long createtime);
-
-    //select * from user where userid=#{userid}
-    User getById(@Param("userid") long userid);
-
-    User getById2(long userid, boolean forUpdate);
-
-    //select * from user where sex=#{sex} and enableflag=#{enableflag} order by createtime desc limit #{offset} , #{size}
-    //sometimes select have order by, group by etc sql, we can use @AfterWhere to help us for these situation
-    //AfterWhere value must use table's column name
-    @AfterWhere("order by createtime desc limit #{offset} , #{size}")
-    List<User> getList(Integer sex, boolean enableflag, @NotColumn int offset, @NotColumn int size);
-
-    //select count(*) from user where sex=#{sex} and enableflag=#{enableflag}
-    int count(Integer sex, boolean enableflag);
-
-    //look a bit of complicated example for single table select:
-    //select * from user where sex=#{sex} and enableflag=#{enableflag} and nick like \"%\"#{nick}\"%\" and level>=#{minLevel} and level<=#{maxLevel} order by createtime desc limit #{offset} , #{size}
-    // level as same as bean's level
-    // nick as same as bean's nick
-    @AfterWhere("order by createtime desc limit #{offset} , #{size}")
-    List<User> getList2(Integer sex,
-                        boolean enableflag,
-                        @Like("nick") String nick,
-                        @MinValue("level") int minLevel,
-                        @MaxValue("level") int maxLevel,
-                        @NotColumn int offset, @NotColumn int size);
-
+    @Lang(OhMyXmlDriver.class)
+    @Delete({SQL.DELETE, "where userid $in{userids}"})
+    int deleteInUserids(@Param("userids") List<Long> userids);
 }

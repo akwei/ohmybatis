@@ -1,18 +1,22 @@
 package com.github.akwei.ohmybatis.example.entity;
 
-import com.github.akwei.ohmybatis.annotations.NotColumn;
-
+import com.github.akwei.ohmybatis.BaseEntity;
+import java.util.Date;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
-//use jpa interface annotation
-//name = table name
-@Table(name = "user")
-public class User {
+//table name
+@Table(name = "t_user")
+public class User extends BaseEntity<User> {
 
     //mark userid is a primary key of table user.
     //table can have multi @Id property, like composite-id
     @Id
+    // id auto increment by mysql
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userid;
 
     private String nick;
@@ -25,10 +29,10 @@ public class User {
 
     private int level;
 
-    private long createtime;
+    private Date createtime;
 
     //use @NotColumn mark the property is not a table column
-    @NotColumn
+    @Transient
     private String otherField;
 
     public long getUserid() {
@@ -87,11 +91,11 @@ public class User {
         this.otherField = otherField;
     }
 
-    public long getCreatetime() {
+    public Date getCreatetime() {
         return createtime;
     }
 
-    public void setCreatetime(long createtime) {
+    public void setCreatetime(Date createtime) {
         this.createtime = createtime;
     }
 }

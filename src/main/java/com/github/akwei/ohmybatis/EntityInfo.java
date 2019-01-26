@@ -1,64 +1,84 @@
 package com.github.akwei.ohmybatis;
 
-import com.github.akwei.ohmybatis.annotations.*;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
-
-import javax.persistence.Id;
+import com.github.akwei.ohmybatis.annotations.UniqueKey;
 import java.lang.reflect.Field;
-import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 class EntityInfo {
 
-    private Class clazz;
-
     private boolean mapUnderscoreToCamelCase;
-
-    private List<FieldInfo> idFieldInfos;
-
-    private Map<String, FieldInfo> fieldInfoMap;
-
 
     /**
      * mapping with table's column
      */
     private List<FieldInfo> fieldInfos;
 
-    EntityInfo(Class clazz, boolean mapUnderscoreToCamelCase) {
+    private List<FieldInfo> uniqueKeys;
+
+    private FieldInfo idFieldInfo;
+
+    private String tableName;
+
+    private static Map<String, EntityInfo> map = new ConcurrentHashMap<>();
+
+    private EntityInfo(boolean mapUnderscoreToCamelCase) {
         this.fieldInfos = new ArrayList<>();
-        this.idFieldInfos = new ArrayList<>();
-        this.fieldInfoMap = new HashMap<>();
-        this.clazz = clazz;
+        this.uniqueKeys = new ArrayList<>(2);
         this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
+
     }
 
-    void init() {
-        this.buildFieldsForClass(clazz);
+    static synchronized EntityInfo getEntityInfo(Class<?> clazz) {
+        EntityInfo entityInfo = map.get(clazz.getName());
+        if (entityInfo == null) {
+            Table entity = clazz.getAnnotation(Table.class);
+            if (entity == null) {
+                throw new RuntimeException(
+                      clazz.getName() + " must set annotation " + Table.class.getName());
+            }
+            entityInfo = new EntityInfo(
+                  OhMyConfiguration.configuration.isMapUnderscoreToCamelCase());
+            entityInfo.tableName = entity.name();
+            entityInfo.buildFieldsForClass(clazz);
+            map.put(clazz.getName(), entityInfo);
+        }
+        return entityInfo;
     }
 
-    private void buildFieldsForClass(Class clazz) {
-        Objects.requireNonNull(clazz, "clazz must be not null");
-        Class curClazz = clazz;
+    FieldInfo getIdFieldInfo() {
+        return idFieldInfo;
+    }
+
+    private void buildFieldsForClass(Class<?> clazz) {
+        Class<?> curClazz = clazz;
         while (curClazz != null) {
-            Field[] fs = clazz.getDeclaredFields();
+            Field[] fs = curClazz.getDeclaredFields();
             for (Field f : fs) {
                 if (!f.getDeclaringClass().equals(clazz)) {
                     continue;
                 }
                 f.setAccessible(true);
-                NotColumn notColumn = f.getAnnotation(NotColumn.class);
-                if (notColumn != null) {
+                Transient aTransient = f.getAnnotation(Transient.class);
+                if (aTransient != null) {
                     continue;
                 }
                 FieldInfo fieldInfo = new FieldInfo(f, this.mapUnderscoreToCamelCase);
-                Id id = f.getAnnotation(Id.class);
-                if (id != null) {
-                    idFieldInfos.add(fieldInfo);
-                } else {
-                    this.fieldInfos.add(fieldInfo);
+                this.fieldInfos.add(fieldInfo);
+                if (f.getAnnotation(Id.class) != null) {
+                    this.idFieldInfo = fieldInfo;
                 }
-                fieldInfoMap.put(f.getName(), fieldInfo);
+                if (f.getAnnotation(UniqueKey.class) != null) {
+                    this.uniqueKeys.add(fieldInfo);
+                }
             }
             curClazz = curClazz.getSuperclass();
             if (curClazz.equals(Object.class)) {
@@ -67,17 +87,19 @@ class EntityInfo {
         }
     }
 
-    String buildInsertSQL(String tableName, String paramName, boolean genKey) {
+    String buildInsertSQL(String paramName, boolean script, boolean batch,
+          boolean genKey) {
         StringBuilder sb = new StringBuilder();
+        if (script) {
+            sb.append("<script>\n");
+        }
         sb.append("insert into ");
         sb.append(tableName);
         sb.append('(');
-        List<FieldInfo> list = new ArrayList<>();
-        if (!genKey) {
-            list.addAll(this.idFieldInfos);
+        List<FieldInfo> list = new ArrayList<>(this.fieldInfos);
+        if (genKey) {
+            list.remove(this.idFieldInfo);
         }
-        list.addAll(this.fieldInfos);
-
         int k = 0;
         int lastIdx = list.size() - 1;
         for (FieldInfo fieldInfo : list) {
@@ -87,7 +109,12 @@ class EntityInfo {
             }
             k++;
         }
-        sb.append(") values (");
+        sb.append(") values ");
+        if (batch) {
+            sb.append("\n<foreach item=\"item\" collection=\"list\" separator=\",\">\n");
+            paramName = "item";
+        }
+        sb.append('(');
         k = 0;
         for (FieldInfo fieldInfo : list) {
             sb.append("#{").append(paramName).append('.');
@@ -99,17 +126,24 @@ class EntityInfo {
             k++;
         }
         sb.append(')');
+        if (batch) {
+            sb.append("\n</foreach>");
+        }
+        if (script) {
+            sb.append("\n</script>");
+        }
         return sb.toString();
     }
 
-    <T> String buildUpdateObjSQL(String tableName, String alias, T t, T old) {
+    <T> String buildUpdateObjSQL(String alias, T t, T old, String whereSql) {
         if (old == null) {
-            return _buildUpdateObj(tableName, alias, this.fieldInfos);
+            return _buildUpdateObj(alias, this.fieldInfos, whereSql);
         }
-        return _buildUpdateSQL4Old(tableName, alias, t, old);
+        return _buildUpdateSQL4Old(alias, t, old, whereSql);
     }
 
-    private <T> String _buildUpdateSQL4Old(String tableName, String alias, T t, T old) {
+    private <T> String _buildUpdateSQL4Old(String alias, T t, T old,
+          String whereSql) {
         List<FieldInfo> list = new ArrayList<>();
         for (FieldInfo fieldInfo : this.fieldInfos) {
             Object valueT = CommonUtils.getFieldValue(fieldInfo.getField(), t);
@@ -119,10 +153,10 @@ class EntityInfo {
             }
             list.add(fieldInfo);
         }
-        return _buildUpdateObj(tableName, alias, list);
+        return _buildUpdateObj(alias, list, whereSql);
     }
 
-    private String _buildUpdateObj(String tableName, String alias, List<FieldInfo> list) {
+    private String _buildUpdateObj(String alias, List<FieldInfo> list, String whereSql) {
         StringBuilder sb = new StringBuilder();
         sb.append("update ");
         sb.append(tableName);
@@ -130,243 +164,75 @@ class EntityInfo {
         int k = 0;
         int lastIdx = list.size() - 1;
         for (FieldInfo fieldInfo : list) {
-            sb.append(fieldInfo.getColumn()).append("=").append("#{").append(alias).append(".").append(fieldInfo.getField().getName()).append('}');
-            if (k < lastIdx) {
-                sb.append(", ");
+            if (!fieldInfo.isId()) {
+                sb.append(fieldInfo.getColumn()).append("=").append("#{").append(alias).append(".")
+                      .append(fieldInfo.getField().getName()).append('}');
+                if (k < lastIdx) {
+                    sb.append(", ");
+                }
             }
             k++;
         }
-
-        sb.append(" where ");
-        k = 0;
-        lastIdx = this.idFieldInfos.size() - 1;
-        for (FieldInfo idFieldInfo : this.idFieldInfos) {
-            sb.append(idFieldInfo.getColumn()).append("=").append("#{").append(alias).append(".").append(idFieldInfo.getField().getName()).append('}');
-            if (k < lastIdx) {
-                sb.append(" and ");
+        if (whereSql != null) {
+            sb.append(" where ").append(whereSql);
+        } else {
+            if (this.idFieldInfo != null) {
+                sb.append(" where ");
+                this.appendFieldInfoToSQLWhere(sb, alias, this.idFieldInfo);
+            } else if (!this.uniqueKeys.isEmpty()) {
+                k = 0;
+                lastIdx = this.uniqueKeys.size() - 1;
+                sb.append(" where ");
+                for (FieldInfo fieldInfo : this.uniqueKeys) {
+                    this.appendFieldInfoToSQLWhere(sb, alias, fieldInfo);
+                    if (k < lastIdx) {
+                        sb.append(" and ");
+                    }
+                }
             }
-            k++;
         }
         return sb.toString();
     }
 
-    String buildDeleteSQL(String tableName, List<Parameter> parameters) {
+    String buildDeleteByIdSQL() {
         StringBuilder sb = new StringBuilder();
-        sb.append("delete from ").append(tableName);
-        if (CommonUtils.isEmpty(parameters)) {
-            return sb.toString();
-        }
-        this.buildWhereStringBuffer(sb, parameters);
+        sb.append("delete from ").append(this.tableName).append(" where ")
+              .append(this.idFieldInfo.getColumn()).append("=").append("#{id}");
         return sb.toString();
     }
 
-    String buildUpdateSQL(String tableName, List<Parameter> parameters) {
-        List<Parameter> valueParameters = new ArrayList<>();
-        List<Parameter> whereParameters = new ArrayList<>();
-        for (Parameter parameter : parameters) {
-            UpdateField updateField = parameter.getAnnotation(UpdateField.class);
-            if (updateField != null) {
-                valueParameters.add(parameter);
-            } else {
-                whereParameters.add(parameter);
-            }
-        }
-
-        if (CommonUtils.isEmpty(valueParameters)) {
-            throw new IllegalArgumentException("update sql must has set ...");
-        }
-        if (CommonUtils.isEmpty(whereParameters)) {
-            throw new IllegalArgumentException("update sql must has where ...");
-        }
-
+    String buildSelectByIdSQL(Boolean forUpdate) {
         StringBuilder sb = new StringBuilder();
-        sb.append("update ");
-        sb.append(tableName);
-        sb.append(" set ");
-
-        int i = 0;
-        int lastIdx = valueParameters.size() - 1;
-        for (Parameter valueParameter : valueParameters) {
-            FieldInfo fieldInfo = this.fieldInfoMap.get(valueParameter.getName());
-            if (fieldInfo == null) {
-                throw new NullPointerException(valueParameter.getName() + " can not find fieldInfo in map");
-            }
-            sb.append(fieldInfo.getColumn()).append("=").append("#{").append(valueParameter.getName()).append("}");
-            if (i < lastIdx) {
-                sb.append(", ");
-            }
-        }
-        this.buildWhereStringBuffer(sb, parameters);
-        return sb.toString();
-    }
-
-    String buildSelectSQL(String tableName, List<Parameter> parameters, String afterWhere, boolean forUpdate) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("select * from ").append(tableName);
-        if (CommonUtils.isEmpty(parameters)) {
-            return sb.toString();
-        }
-        this.buildWhereStringBuffer(sb, parameters);
-        if (afterWhere != null) {
-            sb.append(" ").append(afterWhere);
-        }
-        if (forUpdate) {
+        sb.append("select * from ").append(this.tableName).append(" where ")
+              .append(this.idFieldInfo.getColumn()).append("=").append("#{id}");
+        if (forUpdate != null && forUpdate) {
             sb.append(" for update");
         }
         return sb.toString();
     }
 
-    String buildCountSQL(String tableName, List<Parameter> parameters, String afterWhere) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("select count(*) from ").append(tableName);
-        if (CommonUtils.isEmpty(parameters)) {
-            return sb.toString();
-        }
-        this.buildWhereStringBuffer(sb, parameters);
-        if (afterWhere != null) {
-            sb.append(" ").append(afterWhere);
-        }
-        return sb.toString();
+    private void appendFieldInfoToSQLWhere(StringBuilder sb, String alias, FieldInfo fieldInfo) {
+        sb.append(fieldInfo.getColumn()).append("=").append("#{")
+              .append(alias).append(".").append(fieldInfo.getField().getName())
+              .append("}");
     }
 
-    private void buildWhereStringBuffer(StringBuilder sb, List<Parameter> parameters) {
-        sb.append(" where ");
-        List<Parameter> whereParameters = new ArrayList<>();
-        for (Parameter parameter : parameters) {
-            NotColumn notColumn = parameter.getAnnotation(NotColumn.class);
-            if (notColumn != null) {
-                continue;
+    public boolean isGenKey() {
+        FieldInfo idFieldInfo = this.getIdFieldInfo();
+        boolean genKey = false;
+        if (idFieldInfo != null) {
+            GeneratedValue generatedValue = idFieldInfo.getField()
+                  .getAnnotation(GeneratedValue.class);
+            if (generatedValue != null && generatedValue.strategy()
+                  .equals(GenerationType.IDENTITY)) {
+                genKey = true;
             }
-            if (parameter.getName().equalsIgnoreCase("forUpdate")) {
-                continue;
-            }
-            whereParameters.add(parameter);
         }
-
-        int i = 0;
-        int lastIdx = whereParameters.size() - 1;
-        for (Parameter parameter : whereParameters) {
-            MaxValue maxValue = parameter.getAnnotation(MaxValue.class);
-            if (maxValue != null) {
-                String fieldName;
-                if (StringUtils.isNotEmpty(maxValue.value())) {
-                    fieldName = maxValue.value();
-                } else {
-                    fieldName = parameter.getName();
-                }
-                FieldInfo fieldInfo = this.fieldInfoMap.get(fieldName);
-                if (fieldInfo == null) {
-                    throw new NullPointerException(maxValue.value() + " can not find fieldInfo in map");
-                }
-                sb.append(fieldInfo.getColumn());
-                sb.append("<");
-                if (maxValue.include()) {
-                    sb.append("=");
-                }
-                this.buildParameterSb(parameter, sb);
-                if (i < lastIdx) {
-                    sb.append(" and ");
-                }
-                i++;
-                continue;
-            }
-            MinValue minValue = parameter.getAnnotation(MinValue.class);
-            if (minValue != null) {
-                String fieldName;
-                if (StringUtils.isNotEmpty(minValue.value())) {
-                    fieldName = minValue.value();
-                } else {
-                    fieldName = parameter.getName();
-                }
-                FieldInfo fieldInfo = this.fieldInfoMap.get(fieldName);
-                if (fieldInfo == null) {
-                    throw new NullPointerException(minValue.value() + " can not find fieldInfo in map");
-                }
-                sb.append(fieldInfo.getColumn());
-                sb.append(">");
-                if (minValue.include()) {
-                    sb.append("=");
-                }
-                this.buildParameterSb(parameter, sb);
-                if (i < lastIdx) {
-                    sb.append(" and ");
-                }
-                i++;
-                continue;
-            }
-            NotEq notEq = parameter.getAnnotation(NotEq.class);
-            if (notEq != null) {
-                String fieldName;
-                if (StringUtils.isNotEmpty(notEq.value())) {
-                    fieldName = notEq.value();
-                } else {
-                    fieldName = parameter.getName();
-                }
-                FieldInfo fieldInfo = this.fieldInfoMap.get(fieldName);
-                if (fieldInfo == null) {
-                    throw new NullPointerException(notEq.value() + " can not find fieldInfo in map");
-                }
-                sb.append(fieldInfo.getColumn());
-                sb.append("!=");
-                this.buildParameterSb(parameter, sb);
-                if (i < lastIdx) {
-                    sb.append(" and ");
-                }
-                i++;
-                continue;
-            }
-            Like like = parameter.getAnnotation(Like.class);
-            if (like != null) {
-                String fieldName;
-                if (StringUtils.isNotEmpty(like.value())) {
-                    fieldName = like.value();
-                } else {
-                    fieldName = parameter.getName();
-                }
-                FieldInfo fieldInfo = this.fieldInfoMap.get(fieldName);
-                if (fieldInfo == null) {
-                    throw new NullPointerException(like.value() + " can not find fieldInfo in map");
-                }
-                sb.append(fieldInfo.getColumn());
-                sb.append(" like ");
-                if (like.left()) {
-                    sb.append("\"%\"");
-                }
-                this.buildParameterSb(parameter, sb);
-                if (like.right()) {
-                    sb.append("\"%\"");
-                }
-                if (i < lastIdx) {
-                    sb.append(" and ");
-                }
-                i++;
-                continue;
-            }
-            //not above condition then append equal expression
-            String fieldName = parameter.getName();
-            FieldInfo fieldInfo = this.fieldInfoMap.get(fieldName);
-            if (fieldInfo == null) {
-                throw new NullPointerException(fieldName + " can not find fieldInfo in map");
-            }
-            sb.append(fieldInfo.getColumn()).append("=");
-            this.buildParameterSb(parameter, sb);
-            if (i < lastIdx) {
-                sb.append(" and ");
-            }
-            i++;
-        }
-    }
-
-    private void buildParameterSb(Parameter parameter, StringBuilder sb) {
-        Param param = parameter.getAnnotation(Param.class);
-        sb.append("#{");
-        if (param != null) {
-            sb.append(param.value());
-        } else {
-            sb.append(parameter.getName());
-        }
-        sb.append("}");
+        return genKey;
     }
 
 
+    String getTableName() {
+        return tableName;
+    }
 }
