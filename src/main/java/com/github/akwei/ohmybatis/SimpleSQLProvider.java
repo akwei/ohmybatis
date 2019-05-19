@@ -1,11 +1,12 @@
 package com.github.akwei.ohmybatis;
 
 import com.github.akwei.ohmybatis.annotations.UpdateObj;
-import java.util.Map;
-import java.util.Objects;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.annotation.ProviderContext;
+
+import java.util.Map;
+import java.util.Objects;
 
 public class SimpleSQLProvider {
 
@@ -16,22 +17,22 @@ public class SimpleSQLProvider {
 
     @SuppressWarnings("unused")
     public static String buildInsertSQL(ProviderContext providerContext,
-          Map<String, Object> argMap) {
+                                        Map<String, Object> argMap) {
         Class<?>[] parameterTypes = providerContext.getMapperMethod().getParameterTypes();
         Class<?> entityClazz;
         if (parameterTypes.length != 1) {
             throw new IllegalArgumentException(providerContext.getMapperMethod().getName() +
-                  "insert method must has only one argument. that is entity object");
+                    "insert method must has only one argument. that is entity object");
         }
         Param param = providerContext.getMapperMethod().getParameters()[0]
-              .getAnnotation(Param.class);
+                .getAnnotation(Param.class);
         Objects.requireNonNull(param, "method argument must has @param annotation");
         entityClazz = CommonUtils.findParameterizedClassFromMapper(providerContext.getMapperType());
         Options options = providerContext.getMapperMethod().getAnnotation(Options.class);
         EntityInfo entityInfo = EntityInfo.getEntityInfo(entityClazz);
         return entityInfo
-              .buildInsertSQL(param.value(), false, false,
-                    options.useGeneratedKeys());
+                .buildInsertSQL(param.value(), false, false,
+                        options.useGeneratedKeys());
     }
 
     /**
@@ -39,12 +40,12 @@ public class SimpleSQLProvider {
      * com.github.akwei.ohmybatis.annotations.UpdateObj} 中sql的参数
      *
      * @param providerContext providerContext mybatis ${@link ProviderContext}
-     * @param argMap 请求的参数map
+     * @param argMap          请求的参数map
      * @return sql
      */
     @SuppressWarnings("unused")
     public static String buildUpdateObjSQL(ProviderContext providerContext,
-          Map<String, Object> argMap) {
+                                           Map<String, Object> argMap) {
         Object obj = argMap.get("param1");
         Object old = null;
         if (argMap.containsKey("param2")) {
@@ -66,16 +67,16 @@ public class SimpleSQLProvider {
      * 生成实体的 deleteById 方法
      *
      * @param providerContext providerContext mybatis ${@link ProviderContext}
-     * @param argMap 请求的参数map
+     * @param argMap          请求的参数map
      * @return sql
      */
     @SuppressWarnings("unused")
     public static String buildDeleteByIdSQL(ProviderContext providerContext,
-          Map<String, Object> argMap) {
+                                            Map<String, Object> argMap) {
         Object obj = argMap.get("param1");
         Objects.requireNonNull(obj, "deleteById id argument must be not null");
         Class<?> entityClazz = CommonUtils
-              .findParameterizedClassFromMapper(providerContext.getMapperType());
+                .findParameterizedClassFromMapper(providerContext.getMapperType());
         EntityInfo entityInfo = EntityInfo.getEntityInfo(entityClazz);
         return entityInfo.buildDeleteByIdSQL();
     }
@@ -84,12 +85,12 @@ public class SimpleSQLProvider {
      * 生成实体的 selectById 方法
      *
      * @param providerContext providerContext mybatis ${@link ProviderContext}
-     * @param argMap 请求的参数map
+     * @param argMap          请求的参数map
      * @return sql
      */
     @SuppressWarnings("unused")
     public static String buildSelectByIdSQL(ProviderContext providerContext,
-          Map<String, Object> argMap) {
+                                            Map<String, Object> argMap) {
         Object obj1 = argMap.get("param1");
         Boolean forUpdate = null;
         if (argMap.containsKey("param2")) {
@@ -97,7 +98,7 @@ public class SimpleSQLProvider {
         }
         Objects.requireNonNull(obj1, "selectById id argument must be not null");
         Class<?> entityClazz = CommonUtils
-              .findParameterizedClassFromMapper(providerContext.getMapperType());
+                .findParameterizedClassFromMapper(providerContext.getMapperType());
         EntityInfo entityInfo = EntityInfo.getEntityInfo(entityClazz);
         return entityInfo.buildSelectByIdSQL(forUpdate);
     }

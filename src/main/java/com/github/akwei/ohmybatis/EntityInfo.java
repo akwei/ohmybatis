@@ -1,17 +1,14 @@
 package com.github.akwei.ohmybatis;
 
 import com.github.akwei.ohmybatis.annotations.UniqueKey;
+
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
 class EntityInfo {
 
@@ -43,10 +40,10 @@ class EntityInfo {
             Table entity = clazz.getAnnotation(Table.class);
             if (entity == null) {
                 throw new RuntimeException(
-                      clazz.getName() + " must set annotation " + Table.class.getName());
+                        clazz.getName() + " must set annotation " + Table.class.getName());
             }
             entityInfo = new EntityInfo(
-                  OhMyConfiguration.configuration.isMapUnderscoreToCamelCase());
+                    OhMyConfiguration.configuration.isMapUnderscoreToCamelCase());
             entityInfo.tableName = entity.name();
             entityInfo.buildFieldsForClass(clazz);
             map.put(clazz.getName(), entityInfo);
@@ -88,7 +85,7 @@ class EntityInfo {
     }
 
     String buildInsertSQL(String paramName, boolean script, boolean batch,
-          boolean genKey) {
+                          boolean genKey) {
         StringBuilder sb = new StringBuilder();
         if (script) {
             sb.append("<script>\n");
@@ -143,7 +140,7 @@ class EntityInfo {
     }
 
     private <T> String _buildUpdateSQL4Old(String alias, T t, T old,
-          String whereSql) {
+                                           String whereSql) {
         List<FieldInfo> list = new ArrayList<>();
         for (FieldInfo fieldInfo : this.fieldInfos) {
             Object valueT = CommonUtils.getFieldValue(fieldInfo.getField(), t);
@@ -166,7 +163,7 @@ class EntityInfo {
         for (FieldInfo fieldInfo : list) {
             if (!fieldInfo.isId()) {
                 sb.append(fieldInfo.getColumn()).append("=").append("#{").append(alias).append(".")
-                      .append(fieldInfo.getField().getName()).append('}');
+                        .append(fieldInfo.getField().getName()).append('}');
                 if (k < lastIdx) {
                     sb.append(", ");
                 }
@@ -197,14 +194,14 @@ class EntityInfo {
     String buildDeleteByIdSQL() {
         StringBuilder sb = new StringBuilder();
         sb.append("delete from ").append(this.tableName).append(" where ")
-              .append(this.idFieldInfo.getColumn()).append("=").append("#{id}");
+                .append(this.idFieldInfo.getColumn()).append("=").append("#{id}");
         return sb.toString();
     }
 
     String buildSelectByIdSQL(Boolean forUpdate) {
         StringBuilder sb = new StringBuilder();
         sb.append("select * from ").append(this.tableName).append(" where ")
-              .append(this.idFieldInfo.getColumn()).append("=").append("#{id}");
+                .append(this.idFieldInfo.getColumn()).append("=").append("#{id}");
         if (forUpdate != null && forUpdate) {
             sb.append(" for update");
         }
@@ -213,8 +210,8 @@ class EntityInfo {
 
     private void appendFieldInfoToSQLWhere(StringBuilder sb, String alias, FieldInfo fieldInfo) {
         sb.append(fieldInfo.getColumn()).append("=").append("#{")
-              .append(alias).append(".").append(fieldInfo.getField().getName())
-              .append("}");
+                .append(alias).append(".").append(fieldInfo.getField().getName())
+                .append("}");
     }
 
     public boolean isGenKey() {
@@ -222,9 +219,9 @@ class EntityInfo {
         boolean genKey = false;
         if (idFieldInfo != null) {
             GeneratedValue generatedValue = idFieldInfo.getField()
-                  .getAnnotation(GeneratedValue.class);
+                    .getAnnotation(GeneratedValue.class);
             if (generatedValue != null && generatedValue.strategy()
-                  .equals(GenerationType.IDENTITY)) {
+                    .equals(GenerationType.IDENTITY)) {
                 genKey = true;
             }
         }

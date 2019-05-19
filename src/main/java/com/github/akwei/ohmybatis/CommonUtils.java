@@ -3,7 +3,6 @@ package com.github.akwei.ohmybatis;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
 
 class CommonUtils {
 
@@ -12,13 +11,9 @@ class CommonUtils {
             return field.get(target);
         } catch (IllegalAccessException ex) {
             throw new IllegalStateException(
-                  "Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex
-                        .getMessage());
+                    "Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex
+                            .getMessage());
         }
-    }
-
-    static boolean isEmpty(Collection<?> collection) {
-        return (collection == null || collection.isEmpty());
     }
 
     static Class<?> findParameterizedClassFromMapper(Class clazz) {

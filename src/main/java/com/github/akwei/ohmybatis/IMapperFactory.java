@@ -1,10 +1,11 @@
 package com.github.akwei.ohmybatis;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class IMapperFactory implements ApplicationContextAware {

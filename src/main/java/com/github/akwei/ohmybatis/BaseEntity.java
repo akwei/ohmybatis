@@ -31,7 +31,7 @@ public abstract class BaseEntity<T> implements IEntity<T> {
         FieldInfo idFieldInfo = entityInfo.getIdFieldInfo();
         if (idFieldInfo == null) {
             throw new RuntimeException(
-                  this.getClass().getName() + " invoke delete method but has not @Id");
+                    this.getClass().getName() + " invoke delete method but has not @Id");
         }
         try {
             Object idValue = idFieldInfo.getField().get(this);

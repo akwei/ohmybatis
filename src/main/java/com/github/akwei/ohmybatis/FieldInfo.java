@@ -2,8 +2,8 @@ package com.github.akwei.ohmybatis;
 
 import com.google.common.base.CaseFormat;
 
-import java.lang.reflect.Field;
 import javax.persistence.Id;
+import java.lang.reflect.Field;
 
 class FieldInfo {
 

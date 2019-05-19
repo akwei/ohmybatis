@@ -6,7 +6,7 @@
 
     <groupId>com.github.akwei</groupId>
     <artifactId>ohmybatis</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
     <name>ohmybatis</name>
     <url>https://github.com/akwei/ohmybatis</url>

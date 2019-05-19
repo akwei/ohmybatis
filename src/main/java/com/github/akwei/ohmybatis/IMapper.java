@@ -1,15 +1,8 @@
 package com.github.akwei.ohmybatis;
 
+import org.apache.ibatis.annotations.*;
+
 import java.util.List;
-import org.apache.ibatis.annotations.DeleteProvider;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.InsertProvider;
-import org.apache.ibatis.annotations.Lang;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectProvider;
-import org.apache.ibatis.annotations.UpdateProvider;
 
 public interface IMapper<T> {
 
@@ -25,12 +18,12 @@ public interface IMapper<T> {
     @Lang(OhMyXmlDriver.class)
     @Options(keyProperty = "[id]")//使用[id]表示动态的获取实体对象的id属性
     @Insert(SQL.BATCH_INSERT)
-    void insertBatch(@Param("list") List<T> users);
+    void insertBatch(@Param("list") List<T> list);
 
     /**
      * 执行 update sql，生成的sql为变化过的字段
      *
-     * @param t update的数据
+     * @param t        update的数据
      * @param snapshot 数据未更新前的副本, null 表示更新除了id的所有字段
      * @return 操作结果
      */
@@ -40,7 +33,7 @@ public interface IMapper<T> {
     /**
      * 根据id删除数据
      *
-     * @param id 数据的id
+     * @param id   数据的id
      * @param <PK> d 类型
      * @return 操作结果
      */
@@ -50,9 +43,9 @@ public interface IMapper<T> {
     /**
      * 根据id查询数据
      *
-     * @param id 数据的id
+     * @param id        数据的id
      * @param forUpdate 是否使用 for update sql
-     * @param <PK> id 类型
+     * @param <PK>      id 类型
      * @return 查询结果
      */
     @SelectProvider(type = SimpleSQLProvider.class, method = SimpleSQLProvider.SELECT_BYID)
@@ -60,6 +53,6 @@ public interface IMapper<T> {
 
     @Lang(OhMyXmlDriver.class)
     @Select({SQL.SELECT_IN_IDS,
-          "where userid $in{userids} order by createtime desc limit #{offset} , #{size}"})
+            "where userid $in{userids} order by createtime desc limit #{offset} , #{size}"})
     <PK> List<T> selectInIds(@Param("ids") List<PK> ids);
 }

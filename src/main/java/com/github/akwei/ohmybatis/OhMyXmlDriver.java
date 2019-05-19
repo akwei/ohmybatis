@@ -16,21 +16,21 @@ public class OhMyXmlDriver extends XMLLanguageDriver {
 
     @Override
     public ParameterHandler createParameterHandler(MappedStatement mappedStatement,
-          Object parameterObject, BoundSql boundSql) {
+                                                   Object parameterObject, BoundSql boundSql) {
         return super.createParameterHandler(mappedStatement, parameterObject, boundSql);
     }
 
     @Override
     public SqlSource createSqlSource(Configuration configuration, XNode script,
-          Class<?> parameterType) {
+                                     Class<?> parameterType) {
         return super.createSqlSource(configuration, script, parameterType);
     }
 
     @Override
     public SqlSource createSqlSource(Configuration configuration, String script,
-          Class<?> parameterType) {
+                                     Class<?> parameterType) {
         Class<?> clazz = CommonUtils
-              .findParameterizedClassFromMapper(OhMyMapperRegistry.curMapperCls);
+                .findParameterizedClassFromMapper(OhMyMapperRegistry.curMapperCls);
         EntityInfo entityInfo = EntityInfo.getEntityInfo(clazz);
         String sql = null;
         if (script.startsWith(SQL.INSERT)) {
@@ -73,16 +73,16 @@ public class OhMyXmlDriver extends XMLLanguageDriver {
 
     private static String buildSelectInIds(EntityInfo entityInfo) {
         return "<script>"
-              + "select * from " + entityInfo.getTableName()
-              + " where " + entityInfo.getIdFieldInfo().getColumn()
-              + " in "
-              + "<foreach item=\"item\" collection=\"ids\" separator=\",\" open=\"(\" close=\")\">"
-              + "#{item}" + "</foreach>"
-              + "</script>";
+                + "select * from " + entityInfo.getTableName()
+                + " where " + entityInfo.getIdFieldInfo().getColumn()
+                + " in "
+                + "<foreach item=\"item\" collection=\"ids\" separator=\",\" open=\"(\" close=\")\">"
+                + "#{item}" + "</foreach>"
+                + "</script>";
     }
 
     private static String buildUpdateOrDelete(String script, boolean update,
-          EntityInfo entityInfo) {
+                                              EntityInfo entityInfo) {
         StringBuilder sb = new StringBuilder();
         sb.append("<script>");
         String[] split = script.split(" ");
@@ -110,9 +110,9 @@ public class OhMyXmlDriver extends XMLLanguageDriver {
                 int begin = s.indexOf(IN_BEGIN) + IN_BEGIN.length();
                 int end = s.indexOf(IN_END);
                 sb.append("<foreach item=\"").append(item).append("\" collection=\"")
-                      .append(s, begin, end).append("\" separator=\",\" open=\"(\" close=\")\">")
-                      .append("#{")
-                      .append(item).append("}").append("</foreach>");
+                        .append(s, begin, end).append("\" separator=\",\" open=\"(\" close=\")\">")
+                        .append("#{")
+                        .append(item).append("}").append("</foreach>");
                 k++;
             } else {
                 sb.append(s);

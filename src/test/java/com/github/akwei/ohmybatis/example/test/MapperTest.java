@@ -3,16 +3,17 @@ package com.github.akwei.ohmybatis.example.test;
 import com.github.akwei.ohmybatis.EntityCopier;
 import com.github.akwei.ohmybatis.example.entity.User;
 import com.github.akwei.ohmybatis.example.mappers.UserMapper;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import javax.annotation.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext.xml"})
@@ -190,9 +191,9 @@ public class MapperTest {
         user.setCreatetime(new Date());
         this.userMapper.insert(user);
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), true).getUserid());
+                this.userMapper.selectById(user.getUserid(), true).getUserid());
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), false).getUserid());
+                this.userMapper.selectById(user.getUserid(), false).getUserid());
 
     }
 
@@ -207,7 +208,7 @@ public class MapperTest {
         user.setCreatetime(new Date());
         this.userMapper.insert(user);
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), true).getUserid());
+                this.userMapper.selectById(user.getUserid(), true).getUserid());
         this.userMapper.deleteById(user.getUserid());
         Assert.assertNull(this.userMapper.selectById(user.getUserid(), false));
     }
@@ -223,7 +224,7 @@ public class MapperTest {
         user.setCreatetime(new Date());
         user.insert();
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), true).getUserid());
+                this.userMapper.selectById(user.getUserid(), true).getUserid());
         Assert.assertEquals(1, user.delete());
         Assert.assertNull(this.userMapper.selectById(user.getUserid(), false));
     }

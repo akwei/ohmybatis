@@ -1,12 +1,9 @@
 package com.github.akwei.ohmybatis.example.entity;
 
 import com.github.akwei.ohmybatis.BaseEntity;
+
+import javax.persistence.*;
 import java.util.Date;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 
 //table name
 @Table(name = "t_user")

@@ -1,11 +1,12 @@
 package com.github.akwei.ohmybatis;
 
-import java.lang.reflect.Field;
-import java.util.Map;
 import org.apache.ibatis.binding.BindingException;
 import org.apache.ibatis.binding.MapperProxyFactory;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.session.Configuration;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 public class OhMyMapperRegistry extends MapperRegistry {
 
@@ -34,7 +35,7 @@ public class OhMyMapperRegistry extends MapperRegistry {
         if (type.isInterface()) {
             if (hasMapper(type)) {
                 throw new BindingException(
-                      "Type " + type + " is already known to the MapperRegistry.");
+                        "Type " + type + " is already known to the MapperRegistry.");
             }
             boolean loadCompleted = false;
             try {
