@@ -1,7 +1,5 @@
 package com.github.akwei.ohmybatis;
 
-import com.google.common.base.CaseFormat;
-
 import javax.persistence.Id;
 import java.lang.reflect.Field;
 
@@ -14,8 +12,7 @@ class FieldInfo {
     FieldInfo(Field field, boolean mapUnderscoreToCamelCase) {
         this.field = field;
         if (mapUnderscoreToCamelCase) {
-            this.column = CaseFormat.LOWER_CAMEL
-                  .to(CaseFormat.LOWER_UNDERSCORE, this.field.getName());
+            this.column=CaseUtils.lowerCamelToLowerUnderScore(this.field.getName());
         } else {
             this.column = this.field.getName();
         }

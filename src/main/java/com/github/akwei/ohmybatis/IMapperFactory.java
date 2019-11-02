@@ -14,11 +14,11 @@ public class IMapperFactory implements ApplicationContextAware {
 
     private static final Map<String, Class<?>> imapperMap = new HashMap<>();
 
-    public static void addMapper(Class<?> entityCls, Class<?> mapperCls) {
+    static void addMapper(Class<?> entityCls, Class<?> mapperCls) {
         imapperMap.put(entityCls.getName(), mapperCls);
     }
 
-    public static <T> IMapper<T> getMapper(Class<?> entityCls) {
+    static <T> IMapper<T> getMapper(Class<?> entityCls) {
         Class<?> aClass = imapperMap.get(entityCls.getName());
         IMapper<T> mapper = (IMapper<T>) appctx.getBean(aClass);
         if (mapper == null) {

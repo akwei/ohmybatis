@@ -10,10 +10,10 @@ import java.util.Objects;
 
 public class SimpleSQLProvider {
 
-    public static final String INSERT = "buildInsertSQL";
-    public static final String UPDATE_OBJ = "buildUpdateObjSQL";
-    public static final String DELETE_BYID = "buildDeleteByIdSQL";
-    public static final String SELECT_BYID = "buildSelectByIdSQL";
+    static final String INSERT = "buildInsertSQL";
+    static final String UPDATE_OBJ = "buildUpdateObjSQL";
+    static final String DELETE_BYID = "buildDeleteByIdSQL";
+    static final String SELECT_BYID = "buildSelectByIdSQL";
 
     @SuppressWarnings("unused")
     public static String buildInsertSQL(ProviderContext providerContext,

@@ -192,10 +192,8 @@ class EntityInfo {
     }
 
     String buildDeleteByIdSQL() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("delete from ").append(this.tableName).append(" where ")
-                .append(this.idFieldInfo.getColumn()).append("=").append("#{id}");
-        return sb.toString();
+        return "delete from " + this.tableName + " where " +
+                this.idFieldInfo.getColumn() + "=" + "#{id}";
     }
 
     String buildSelectByIdSQL(Boolean forUpdate) {
@@ -214,7 +212,7 @@ class EntityInfo {
                 .append("}");
     }
 
-    public boolean isGenKey() {
+    boolean isGenKey() {
         FieldInfo idFieldInfo = this.getIdFieldInfo();
         boolean genKey = false;
         if (idFieldInfo != null) {
