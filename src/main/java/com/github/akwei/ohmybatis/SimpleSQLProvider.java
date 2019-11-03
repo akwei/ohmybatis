@@ -1,6 +1,5 @@
 package com.github.akwei.ohmybatis;
 
-import com.github.akwei.ohmybatis.annotations.UpdateObj;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.builder.annotation.ProviderContext;
@@ -36,8 +35,7 @@ public class SimpleSQLProvider {
     }
 
     /**
-     * 对于 updateObj 方法需要设定第一个参数必须是要更新的对象，第二个参数必须是旧对象，如果更新全对象， 需要设置旧对象为null，之后的参数应该都是 {@link
-     * com.github.akwei.ohmybatis.annotations.UpdateObj} 中sql的参数
+     * 对于 updateObj 方法需要设定第一个参数必须是要更新的对象，第二个参数必须是旧对象，如果更新全对象， 需要设置旧对象为null
      *
      * @param providerContext providerContext mybatis ${@link ProviderContext}
      * @param argMap          请求的参数map
@@ -55,12 +53,7 @@ public class SimpleSQLProvider {
         Class<?> entityClazz = obj.getClass();
         EntityInfo entityInfo = EntityInfo.getEntityInfo(entityClazz);
         String alias = providerContext.getMapperMethod().getParameters()[0].getName();
-        String where = null;
-        UpdateObj updateObj = providerContext.getMapperMethod().getAnnotation(UpdateObj.class);
-        if (updateObj != null) {
-            where = updateObj.where();
-        }
-        return entityInfo.buildUpdateObjSQL(alias, obj, old, where);
+        return entityInfo.buildUpdateObjSQL(alias, obj, old);
     }
 
     /**

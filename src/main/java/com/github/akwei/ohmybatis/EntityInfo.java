@@ -1,7 +1,5 @@
 package com.github.akwei.ohmybatis;
 
-import com.github.akwei.ohmybatis.annotations.UniqueKey;
-
 import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -19,8 +17,6 @@ class EntityInfo {
      */
     private List<FieldInfo> fieldInfos;
 
-    private List<FieldInfo> uniqueKeys;
-
     private FieldInfo idFieldInfo;
 
     private String tableName;
@@ -29,7 +25,6 @@ class EntityInfo {
 
     private EntityInfo(boolean mapUnderscoreToCamelCase) {
         this.fieldInfos = new ArrayList<>();
-        this.uniqueKeys = new ArrayList<>(2);
         this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
 
     }
@@ -72,9 +67,6 @@ class EntityInfo {
                 this.fieldInfos.add(fieldInfo);
                 if (f.getAnnotation(Id.class) != null) {
                     this.idFieldInfo = fieldInfo;
-                }
-                if (f.getAnnotation(UniqueKey.class) != null) {
-                    this.uniqueKeys.add(fieldInfo);
                 }
             }
             curClazz = curClazz.getSuperclass();
@@ -132,15 +124,14 @@ class EntityInfo {
         return sb.toString();
     }
 
-    <T> String buildUpdateObjSQL(String alias, T t, T old, String whereSql) {
+    <T> String buildUpdateObjSQL(String alias, T t, T old) {
         if (old == null) {
-            return _buildUpdateObj(alias, this.fieldInfos, whereSql);
+            return _buildUpdateObj(alias, this.fieldInfos);
         }
-        return _buildUpdateSQL4Old(alias, t, old, whereSql);
+        return _buildUpdateSQL4Old(alias, t, old);
     }
 
-    private <T> String _buildUpdateSQL4Old(String alias, T t, T old,
-                                           String whereSql) {
+    private <T> String _buildUpdateSQL4Old(String alias, T t, T old) {
         List<FieldInfo> list = new ArrayList<>();
         for (FieldInfo fieldInfo : this.fieldInfos) {
             Object valueT = CommonUtils.getFieldValue(fieldInfo.getField(), t);
@@ -150,10 +141,10 @@ class EntityInfo {
             }
             list.add(fieldInfo);
         }
-        return _buildUpdateObj(alias, list, whereSql);
+        return _buildUpdateObj(alias, list);
     }
 
-    private String _buildUpdateObj(String alias, List<FieldInfo> list, String whereSql) {
+    private String _buildUpdateObj(String alias, List<FieldInfo> list) {
         StringBuilder sb = new StringBuilder();
         sb.append("update ");
         sb.append(tableName);
@@ -170,23 +161,9 @@ class EntityInfo {
             }
             k++;
         }
-        if (whereSql != null) {
-            sb.append(" where ").append(whereSql);
-        } else {
-            if (this.idFieldInfo != null) {
-                sb.append(" where ");
-                this.appendFieldInfoToSQLWhere(sb, alias, this.idFieldInfo);
-            } else if (!this.uniqueKeys.isEmpty()) {
-                k = 0;
-                lastIdx = this.uniqueKeys.size() - 1;
-                sb.append(" where ");
-                for (FieldInfo fieldInfo : this.uniqueKeys) {
-                    this.appendFieldInfoToSQLWhere(sb, alias, fieldInfo);
-                    if (k < lastIdx) {
-                        sb.append(" and ");
-                    }
-                }
-            }
+        if (this.idFieldInfo != null) {
+            sb.append(" where ");
+            this.appendFieldInfoToSQLWhere(sb, alias, this.idFieldInfo);
         }
         return sb.toString();
     }
