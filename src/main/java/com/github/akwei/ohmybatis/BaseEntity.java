@@ -2,42 +2,19 @@ package com.github.akwei.ohmybatis;
 
 import javax.persistence.Transient;
 
-@SuppressWarnings("unchecked")
 public abstract class BaseEntity<T> implements IEntity<T> {
 
     @Transient
-    private T _snapshotObj;
+    private T snapShotObj;
 
-    /**
-     * 创建当前对象的快照数据
-     */
-    public void localSnapshot() {
-        this._snapshotObj = this.snapshot();
+    @Override
+    public T getSnapShotObj() {
+        return snapShotObj;
     }
 
-    public void insert() {
-        IMapper<T> mapper = IMapperFactory.getMapper(this.getClass());
-        mapper.insert((T) this);
+    @Override
+    public void setSnapShotObj(T snapShotObj) {
+        this.snapShotObj = snapShotObj;
     }
 
-    public int update() {
-        IMapper<T> mapper = IMapperFactory.getMapper(this.getClass());
-        return mapper.update((T) this, this._snapshotObj);
-    }
-
-    public int delete() {
-        IMapper<T> mapper = IMapperFactory.getMapper(this.getClass());
-        EntityInfo entityInfo = EntityInfo.getEntityInfo(this.getClass());
-        FieldInfo idFieldInfo = entityInfo.getIdFieldInfo();
-        if (idFieldInfo == null) {
-            throw new RuntimeException(
-                    this.getClass().getName() + " invoke delete method but has not @Id");
-        }
-        try {
-            Object idValue = idFieldInfo.getField().get(this);
-            return mapper.deleteById(idValue);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

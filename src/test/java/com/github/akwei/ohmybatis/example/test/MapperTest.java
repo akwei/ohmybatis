@@ -76,7 +76,8 @@ public class MapperTest {
 
         //if you want to update as: update user set nick=#{nick} where userid=#{userid}
         //1 copy user to old
-        User old = user.snapshot();
+        user.snapshot();
+        User old = user.getSnapShotObj();
         EntityCopier.copy(user, old);
         //2 change user property
         user.setNick("akweiwei11");
@@ -107,7 +108,7 @@ public class MapperTest {
 
         //if you want to update as: update user set nick=#{nick} where userid=#{userid}
         //snapshot user
-        user.localSnapshot();
+        user.snapshot();
         //change user property
         user.setNick("akweiwei11");
         //update t_user set nick=#{nick} where userid=#{userid}
