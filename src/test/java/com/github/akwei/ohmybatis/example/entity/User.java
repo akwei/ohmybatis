@@ -28,7 +28,7 @@ public class User extends BaseEntity<User> {
 
     private Date createtime;
 
-    //use @NotColumn mark the property is not a table column
+    //use @Transient mark the property is not a table column
     @Transient
     private String otherField;
 

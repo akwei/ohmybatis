@@ -24,19 +24,45 @@ How to use
 ### write spring application.xml
  
 ```` xml
-<mybatis:scan base-package="com.github.akwei.ohmybatis.example.mappers"/>
-... other config like datasource ...
-
-<bean id="configuration" class="com.github.akwei.ohmybatis.OhMyConfiguration">
-    <property name="mapUnderscoreToCamelCase" value="true"/>
-    <property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
-</bean>
-<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
-    <property name="dataSource" ref="dataSource"/>
-    <property name="configuration" ref="configuration"/>
-    <property name="mapperLocations" value="classpath*:mappers/*-mapper.xml"/>
-</bean>
-<bean class="com.github.akwei.ohmybatis.IMapperFactory"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+    <context:annotation-config/>
+    <context:component-scan base-package="com.github.akwei.ohmybatis.example"/>
+    <mybatis:scan base-package="com.github.akwei.ohmybatis.example.mappers"/>
+    <tx:annotation-driven proxy-target-class="true"/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+        <property name="username" value="[user]"/>
+        <property name="password" value="[password]"/>
+        <property name="jdbcUrl"
+                  value="[jdbcUrl]"/>
+        <property name="minimumIdle" value="2"/>
+        <property name="maximumPoolSize" value="2"/>
+    </bean>
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="configuration" class="com.github.akwei.ohmybatis.OhMyConfiguration">
+        <property name="mapUnderscoreToCamelCase" value="true"/>
+        <property name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
+    </bean>
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configuration" ref="configuration"/>
+        <property name="mapperLocations" value="classpath*:mappers/*-mapper.xml"/>
+    </bean>
+    <bean class="com.github.akwei.ohmybatis.IMapperFactory"/>
+</beans>
 
 ````
 
@@ -76,7 +102,7 @@ public class User extends BaseEntity<User> {
 
     private Date createtime;
 
-    //use @NotColumn mark the property is not a table column
+    //use @Transient mark the property is not a table column
     @Transient
     private String otherField;
 
@@ -112,7 +138,7 @@ public interface UserMapper extends IMapper<User> {
     //select * from user where userid in (?,?..)
     @Lang(OhMyXmlDriver.class)
     @Select({SQL.SELECT,
-          "where userid $in{userids} order by createtime desc limit #{offset} , #{size}"})
+            "where userid $in{userids} order by createtime desc limit #{offset} , #{size}"})
     List<User> getListInUserids(@Param("userids") List<Long> userids, int offset, int size);
 
     //select count(*) from user where userid in (?,?..)
@@ -138,16 +164,17 @@ package com.github.akwei.ohmybatis.example.test;
 import com.github.akwei.ohmybatis.EntityCopier;
 import com.github.akwei.ohmybatis.example.entity.User;
 import com.github.akwei.ohmybatis.example.mappers.UserMapper;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import javax.annotation.Resource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"/applicationContext.xml"})
@@ -210,7 +237,8 @@ public class MapperTest {
 
         //if you want to update as: update user set nick=#{nick} where userid=#{userid}
         //1 copy user to old
-        User old = user.snapshot();
+        user.snapshot();
+        User old = user.getSnapShotObj();
         EntityCopier.copy(user, old);
         //2 change user property
         user.setNick("akweiwei11");
@@ -241,7 +269,7 @@ public class MapperTest {
 
         //if you want to update as: update user set nick=#{nick} where userid=#{userid}
         //snapshot user
-        user.localSnapshot();
+        user.snapshot();
         //change user property
         user.setNick("akweiwei11");
         //update t_user set nick=#{nick} where userid=#{userid}
@@ -305,10 +333,11 @@ public class MapperTest {
         this.userMapper.insertBatch(userlist);
 
         List<Long> idList = new ArrayList<>();
-        idList.add(1L);
-        idList.add(2L);
+        idList.add(user_batch.getUserid());
+        idList.add(other_batch.getUserid());
+        Assert.assertEquals(2, this.userMapper.countInUserids(idList));
         System.out.println(this.userMapper.getListInUserids(idList, 0, 10));
-        System.out.println(this.userMapper.countInUserids(idList));
+        System.out.println(this.userMapper.selectInIds(idList));
         this.userMapper.updateInUserids(idList, new Date());
         this.userMapper.deleteInUserids(idList);
     }
@@ -324,9 +353,9 @@ public class MapperTest {
         user.setCreatetime(new Date());
         this.userMapper.insert(user);
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), true).getUserid());
+                this.userMapper.selectById(user.getUserid(), true).getUserid());
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), false).getUserid());
+                this.userMapper.selectById(user.getUserid(), false).getUserid());
 
     }
 
@@ -341,7 +370,7 @@ public class MapperTest {
         user.setCreatetime(new Date());
         this.userMapper.insert(user);
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), true).getUserid());
+                this.userMapper.selectById(user.getUserid(), true).getUserid());
         this.userMapper.deleteById(user.getUserid());
         Assert.assertNull(this.userMapper.selectById(user.getUserid(), false));
     }
@@ -357,7 +386,7 @@ public class MapperTest {
         user.setCreatetime(new Date());
         user.insert();
         Assert.assertEquals(user.getUserid(),
-              this.userMapper.selectById(user.getUserid(), true).getUserid());
+                this.userMapper.selectById(user.getUserid(), true).getUserid());
         Assert.assertEquals(1, user.delete());
         Assert.assertNull(this.userMapper.selectById(user.getUserid(), false));
     }
